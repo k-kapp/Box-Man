@@ -4,7 +4,7 @@ A Sokoban clone. The user must push all boxes onto the dots. This version that I
 
 A custom API was written to facilitate the creation of a GUI for the game. This included creating classes for buttons, forms, etc. This was done using the graphics functionality provided by the XNA framework (through Monogame).
 
-Note that this is still a work in progress, and that it is still a little rough around the edges. However, basic functionality is there (check TODO list, after the screenshots below, for information on bugs, missing features, etc.)
+Note that this is a work in progress, and is still a little rough around the edges. However, basic functionality is there (check TODO list, after the screenshots below, for information on bugs, missing features, etc.)
 
 <p align="center">
 <img src="ScreenshotGame.png" width="550">
