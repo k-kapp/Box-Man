@@ -25,13 +25,9 @@ Note that this is a work in progress, and is still a little rough around the edg
 
 ##TODO
 
-+ In puzzle editor, add functionality for:
- - specifying the grid size
-
-+ Fix bug where the game throws a null reference exception if no puzzles were selected before play starts
- - Add a warning instead, then direct player to puzzle selector
-
-+ Fix bug where mouse position is slightly out of line for buttons to activate
++ In puzzle editor,
+ - add functionality for specifying the grid size
+ - prevent image of standard mouse cursor to be painted on grid
 
 + Add functionality for deletion of puzzles
 
