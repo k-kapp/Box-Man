@@ -88,7 +88,7 @@ namespace Sokoban
             AddButton(_downButton);
 
             _scroller = new Button("", 0, InnerWidth + 1, InnerWidth, InnerHeight - 2 - 2 * InnerWidth, this);
-            _scroller.EventCalls += _gameMgr.MainMenuCallback;
+            //_scroller.EventCalls += _gameMgr.MainMenuCallback;
             AddButton(_scroller);
         }
     }
