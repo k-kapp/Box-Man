@@ -39,16 +39,16 @@ namespace Sokoban
             Console.WriteLine("XNAList XAbs: " + XAbs);
             Console.WriteLine("XNAList YAbs" + YAbs);
 
-            _elementsWidth = width - _scrollerWidth;
+            _elementsWidth = InnerWidth - _scrollerWidth;
             _elementsHeight = InnerHeight / numRows;
 
             _numRows = numRows;
 
             _scrollBar = new Sokoban.ScrollBar(_scrollerWidth, this);
             _scrollBar.BaseColor = Color.LightGray;
-            _scrollBar.BorderWidth = 1;
+            //_scrollBar.BorderWidth = 1;
 
-            forms.Add(_scrollBar);
+            AddForm(_scrollBar);
         }
 
         private void _updateElementPosses()
@@ -110,8 +110,10 @@ namespace Sokoban
 
         public void ScrollUp(object sender, ButtonEventArgs args)
         {
+            Button buttonSender = sender as Button;
             if (_reserveElementsUp.Count == 0)
                 return;
+
 
             _reserveElementsDown.Insert(0, _elements[_elements.Count - 1]);
             _elements.RemoveAt(_elements.Count - 1);
@@ -183,6 +185,7 @@ namespace Sokoban
                 element.Draw();
             }
         }
+
 
         public override void Update(GameTime gameTime)
         {

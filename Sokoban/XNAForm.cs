@@ -72,7 +72,7 @@ namespace Sokoban
 
         int _x, _y, _width, _height;
 
-        int _mainBorderWidth = 5;
+        protected int _mainBorderWidth = 5;
 
         protected int _titleBarHeight;
 
@@ -231,6 +231,16 @@ namespace Sokoban
             _parent.RemoveForm(this);
         }
 
+        public override void RemoveForm(XNAForm form)
+        {
+            var popupForm = form as PopupDialog;
+
+            if (popupForm == null)
+                base.RemoveForm(form);
+            else
+                _gameMgr.RemovePopup(popupForm);
+        }
+
         public virtual void AddButton(int x, int y, Button.ButtonClickCallback callback, string text)
         {
             _buttons.Add(new Sokoban.Button(text, x, y, 100, 50, callback, this));
@@ -251,11 +261,15 @@ namespace Sokoban
             _labels.Add(label);
         }
 
-        public void AddForm(XNAForm form)
+        public override void AddForm(XNAForm form)
         {
-            //form.X += _mainBorderWidth;
-            //form.Y += _mainBorderWidth;
-            forms.Add(form);
+            var formPopup = form as PopupDialog;
+            if (formPopup != null)
+            {
+                _gameMgr.AddPopup(formPopup);
+            }
+            else
+                base.AddForm(form);
         }
 
         private void _updateBorderRects()
@@ -333,6 +347,7 @@ namespace Sokoban
                 //_updateBorderRects();
                 Width = Width;
                 Height = Height;
+                _setAbsXY();
             }
         }
 
@@ -598,7 +613,10 @@ namespace Sokoban
         public virtual void DrawMisc(GameTime gameTime)
         { }
 
-        public virtual void Draw(GameTime gameTime)
+        public virtual void UpdateMisc(GameTime gameTime)
+        { }
+
+        public override void Draw(GameTime gameTime)
         {
             num = 20;
 
@@ -643,14 +661,14 @@ namespace Sokoban
             _gameMgr.DrawSprite(renderTargetOuter, _mainRect, Color.White);
         }
 
-        public virtual void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
             foreach (Button button in _buttons)
             {
                 button.Update();
             }
 
-            base.Update(gameTime);
 
         }
 

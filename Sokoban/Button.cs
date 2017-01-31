@@ -38,8 +38,6 @@ namespace Sokoban
         SpriteFont _font;
 
 
-        //Rectangle _mainRect;
-
         int _textHeight, _textWidth;
 
         Texture2D _background;
@@ -221,18 +219,29 @@ namespace Sokoban
             }
         }
 
+        public void MakeInactive()
+        {
+            _drawCol = _inactiveCol;
+        }
+
+        public void MakeActive()
+        {
+            _drawCol = _activeCol;
+        }
+
         public override void Update()
         {
-            base.Update();
-
             if (MouseOnClickable())
             {
-                _drawCol = _activeCol;
+                MakeActive();
             }
             else
             {
-                _drawCol = _inactiveCol;
+                MakeInactive();
             }
+
+            base.Update();
+
         }
 
         /*

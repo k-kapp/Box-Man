@@ -19,23 +19,9 @@ namespace Sokoban
 
         public override void Update(GameTime gameTime)
         {
-            _menu.Update(gameTime);
-            if (popup != null)
-                popup.Update(gameTime);
-
             base.Update(gameTime);
         }
 
-        /*
-        public override void Draw(GameTime gameTime)
-        {
-            _menu.Draw(gameTime);
-            if (popup != null)
-                popup.Draw(gameTime);
-
-            base.Draw(gameTime);
-        }
-        */
         protected override void ImportTextures()
         {
             _cursor = _gameMgr.Content.Load<Texture2D>("Crate");
@@ -68,12 +54,11 @@ namespace Sokoban
             _menu.AddButton("Play", _gameMgr.NewGameCallback, _menu);
             _menu.AddButton("Design", _gameMgr.GotoDesigner, _menu);
             _menu.AddButton("Select Puzzles", _gameMgr.GotoPuzzleSelector, _menu);
-            //_menu.AddButton("Button test", _gameMgr.GotoButtonTest, _menu);
             _menu.AddButton("Exit", _gameMgr.ExitCallback, _menu);
 
             _menu.CenterAll();
 
-            forms.Add(_menu);
+            AddForm(_menu);
 
             _gameMgr.centerMenuXY(_menu);
 

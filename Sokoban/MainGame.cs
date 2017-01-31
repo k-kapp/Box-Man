@@ -180,15 +180,12 @@ namespace Sokoban
             _grid.DrawGrid();
             drawMan(gameTime);
 
-            if (forms.Count > 0)
-                forms[forms.Count - 1].Draw(gameTime);
+            if (forms.Count + popups.Count == 0)
+                ShowCursor = false;
+            else
+                ShowCursor = true;
 
-            if (forms.Count > 0)
-            {
-                Utilities.DrawCursor(_gameMgr);
-            }
-
-            
+            base.Draw(gameTime);
         }
 
         private void LoadContent()
@@ -205,13 +202,14 @@ namespace Sokoban
 
         public void PopForm(object sender, EventArgs args)
         {
-            _popForm = true;
+            var button = sender as Button;
+            button.Parent.Destroy();
         }
 
         public void RestartLevel(object sender, EventArgs args)
         {
             _grid.Reset();
-            _popForm = true;
+            PopForm(sender, args);
         }
 
         public void ExitToMainMenu(object sender, EventArgs args)
@@ -230,7 +228,7 @@ namespace Sokoban
             _gameMgr.centerFormX(popup);
             _gameMgr.centerFormY(popup);
 
-            forms.Add(popup);
+            AddForm(popup);
         }
 
         /*
@@ -240,14 +238,18 @@ namespace Sokoban
         * <param name="gameTime">Provides a snapshot of timing values.</param>
         */
         public override void Update(GameTime gameTime)
-        { 
+        {
+            base.Update(gameTime);
+
+            if (!_update)
+                return;
 
             KeyboardState state = Keyboard.GetState();
             KeyState currKey;
 
             if (escapePrevUp && state.IsKeyDown(Keys.Escape))
             {
-                if (forms.Count == 0)
+                if (forms.Count + popups.Count == 0)
                 {
                     Menu menuInGame = new Menu(this, "", 100, 100, 300, 500);
                     menuInGame.ButtonsYOffset = 10;
@@ -258,7 +260,7 @@ namespace Sokoban
                     menuInGame.AddButton("Quit", ExitConfirmDialog, menuInGame);
                     menuInGame.CenterAll();
                     _gameMgr.centerMenuXY(menuInGame);
-                    forms.Add(menuInGame);
+                    AddForm(menuInGame);
                 }
                 else
                 {

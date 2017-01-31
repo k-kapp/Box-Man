@@ -156,7 +156,18 @@ namespace Sokoban
 
         public void NewGameCallback(object caller, ButtonEventArgs args)
         {
-            _currState = new MainGame(this);
+            if (PuzzlePaths.Count == 0)
+            {
+                PopupDialog selectPuzzlePopup = PopupDialog.MakePopupDialog("No active puzzles. Please select the 'Select Puzzles' option in the main menu", 
+                    "No active puzzles", false, _currState);
+                Button.ButtonClickCallback callback = (a, b) => { var button = a as Button; button.Parent.Destroy(); };
+                selectPuzzlePopup.AddButton(0, 0, callback, "OK");
+                centerFormX(selectPuzzlePopup);
+                centerFormY(selectPuzzlePopup);
+                AddPopup(selectPuzzlePopup);
+            }
+            else
+                _currState = new MainGame(this);
         }
 
         public void ExitCallback(object caller, ButtonEventArgs args)
@@ -245,6 +256,16 @@ namespace Sokoban
 
         }
 
+        public void AddPopup(PopupDialog popup)
+        {
+            _currState.AddForm(popup);
+        }
+
+        public void RemovePopup(PopupDialog popup)
+        {
+            _currState.RemoveForm(popup);
+        }
+
         public void GotoGame()
         {
             _currState = new MainGame(this);
@@ -276,7 +297,22 @@ namespace Sokoban
 
             _currState.Draw(gameTime);
 
+
             spriteBatch.End();
         }
+
+        public bool ShowCursor
+        {
+            set
+            {
+                _currState.ShowCursor = value;
+            }
+
+            get
+            {
+                return _currState.ShowCursor;
+            }
+        }
+
     }
 }

@@ -20,7 +20,7 @@ namespace Sokoban
             XNAForm form = new XNAForm(100, 100, 500, 500, this);
             form.AddButton(50, 50, 300, 150, ButtonChangeX, "Click me");
             form.AddButton(50, 250, 300, 150, _gameMgr.MainMenuCallback, "Back");
-            forms.Add(form);
+            AddForm(form);
         }
 
         protected override void ImportTextures()

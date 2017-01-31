@@ -286,11 +286,14 @@ namespace Sokoban
 
         public override void Draw(GameTime gameTime)
         {
+            /*
             Console.WriteLine("Main inner rect: " + _mainInnerRect.ToString());
             Console.WriteLine("Main outer rect: " + _mainOuterRect.ToString());
+            */
 
             base.Draw(gameTime);
 
+            Console.WriteLine("Drawing popup dialog");
 
             /*
             _gameMgr.SpriteBatch.End();

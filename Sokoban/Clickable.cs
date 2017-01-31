@@ -130,5 +130,13 @@ namespace Sokoban
             else
                 return false;
         }
+
+        public XNAForm Parent
+        {
+            get
+            {
+                return _parent;
+            }
+        }
     }
 }

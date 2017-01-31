@@ -83,7 +83,7 @@ namespace Sokoban
 
             //XNAForm form = new XNAForm(100, 100, 300, 300, this);
 
-            forms.Add(_mainForm);
+            AddForm(_mainForm);
 
         }
 

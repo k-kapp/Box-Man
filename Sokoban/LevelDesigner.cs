@@ -105,7 +105,7 @@ namespace Sokoban
                     dialog.AddButton(0, 0, _saveButtonsSizeX, _saveButtonsSizeY, callbackFunc, "OK");
                     _gameMgr.centerFormX(dialog);
                     _gameMgr.centerFormY(dialog);
-                    forms.Add(dialog);
+                    AddForm(dialog);
                     Console.WriteLine("Exiting savebuttondialog....");
                     return;
                 }
@@ -124,15 +124,19 @@ namespace Sokoban
             savedDialog.AddButton(0, 0, _saveButtonsSizeX, _saveButtonsSizeY, _gameMgr.MainMenuCallback, "Exit to main menu");
             _gameMgr.centerFormX(savedDialog);
             _gameMgr.centerFormY(savedDialog);
-            forms.Add(savedDialog);
+            AddForm(savedDialog);
 
             Console.WriteLine("Exiting from Savebuttondialog....");
+
+            var saveButton = sender as Button;
+            saveButton.MakeInactive();
         }
 
 
         private void _makeDesignForm()
         {
             _designForm = new Sokoban.XNAForm(0, 0, _gameMgr.ScreenWidth, _gameMgr.ScreenHeight, this, "", false);
+            AddForm(_designForm);
         }
 
         private void _makeToolbar()
@@ -204,15 +208,12 @@ namespace Sokoban
 
         public override void Update(GameTime gameTime)
         {
-            _designForm.Update(gameTime);
-
             base.Update(gameTime);
+
         }
 
         public override void Draw(GameTime gameTime)
         {
-            _designForm.Draw(gameTime);
-
             base.Draw(gameTime);
         }
 
