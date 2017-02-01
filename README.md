@@ -15,11 +15,11 @@ Note that this is a work in progress, and is still a little rough around the edg
 </p>
 
 <p align="center">
-<img src="ScreenshotDesigner.png" width="550">
+<img src="ScreenshotDesigner1.png" width="550">
 </p>
 
 <p align="center">
-<img src="ScreenshotSelector.png" width="550">
+<img src="ScreenshotSelector1.png" width="550">
 </p>
 
 
