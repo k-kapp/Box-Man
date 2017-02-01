@@ -31,6 +31,6 @@ Note that this is a work in progress, and is still a little rough around the edg
  
 + Enable scroller to be moved by dragging it (not only by pressing arrow keys, e.g. in lists in puzzle selector)
 
-+ Find new color scheme/better artwork (this ugly yellow won't do!)
++ Find new color scheme/better artwork (not this ugly yellow)
 
 + Cleanup code (make naming more consistent, relocate certain functions/methods to more sensible locations, etc.)
