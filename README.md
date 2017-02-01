@@ -6,6 +6,8 @@ A custom API was written to facilitate the creation of a GUI for the game. This 
 
 Note that this is a work in progress, and is still a little rough around the edges. However, basic functionality is there (check TODO list, after the screenshots below, for information on bugs, missing features, etc.)
 
+The project is very easy to compile: all you need is visual studio, with support for C#. Open the sln file in the root directory, and compile. However, you will most likely need Monogame installed for visual studio. Note that I have included a compiled version in the zip file in the root (SokobanCompiled.zip). But there was some difficulty when I tried to run this executable on another computer - most likely because .NET framework 4.0 was not installed on that PC.
+
 <p align="center">
 <img src="ScreenshotGame.png" width="550">
 </p>
