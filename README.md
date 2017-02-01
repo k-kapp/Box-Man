@@ -27,12 +27,10 @@ Note that this is a work in progress, and is still a little rough around the edg
 
 + In puzzle editor,
  - add functionality for specifying the grid size
- - prevent image of standard mouse cursor to be painted on grid
+ - enable existing puzzles to be imported and modified
+ 
++ Enable scroller to be moved by dragging it (not only by pressing arrow keys, e.g. in lists in puzzle selector)
 
-+ Add functionality for deletion of puzzles
-
-+ Add functionality for active puzzles to stay active even after game was exited
-
-+ Find new color scheme (this ugly yellow won't do!)
++ Find new color scheme/better artwork (this ugly yellow won't do!)
 
 + Cleanup code (make naming more consistent, relocate certain functions/methods to more sensible locations, etc.)
