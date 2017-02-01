@@ -1,5 +1,11 @@
 #Sokoban
 
+##Contents
+
+1. <project URL#introduction>
+
+##Introduction
+
 A Sokoban clone, written in C#. The object of the game is to push all boxes onto the dots. This version that I wrote can take customized maps (puzzles) to play on. The user may design puzzles him/herself, after which they go into the "reserved" pool of puzzles. Only the "active" pool of puzzles are played. The reserved and active pools may be modified via the puzzle selector (from the main menu) shown in the fourth screenshot below. 
 
 Note that the puzzle designer checks basic validity of the puzzle, such as whether it has a starting position, whether the walls enclose the puzzle and whether all areas are reachable. The last aforementioned requirement was checked by implementing a relatively simple depth-first search algorithm: all connected paths in the puzzle are visited, after which it is easy to determine whether all paths are reachable. I have done some basic testing of the algorithm, and of the validation of the designed puzzles, but I hope to test it a bit more thoroughly soon.
