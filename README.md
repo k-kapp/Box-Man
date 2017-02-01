@@ -10,6 +10,22 @@ Note that this is a work in progress, and is still a little rough around the edg
 
 The project is very easy to compile: all you need is visual studio, with support for C#. Open the sln file in the root directory, and compile. However, you will most likely need Monogame installed for visual studio. Note that I have included a compiled version in the zip file in the root (SokobanCompiled.zip). There was, however, some difficulty when I tried to run this executable on another computer - most likely because .NET framework 4.0 was not installed on that PC.
 
+##TODO
+
++ In puzzle editor,
+ - add functionality for specifying the grid size
+ - enable existing puzzles to be imported and modified
+ 
++ Enable scroller to be moved by dragging it (not only by pressing arrow keys, e.g. in lists in puzzle selector)
+
++ Find new color scheme/better artwork (not this ugly yellow)
+
++ Do more thorough testing of puzzle validation
+
++ Cleanup code (make naming more consistent, relocate certain functions/methods to more sensible locations, etc.)
+
+##Screenshots
+
 <p align="center">
 <img src="ScreenshotGame.png" width="550">
 </p>
@@ -27,16 +43,4 @@ The project is very easy to compile: all you need is visual studio, with support
 </p>
 
 
-##TODO
 
-+ In puzzle editor,
- - add functionality for specifying the grid size
- - enable existing puzzles to be imported and modified
- 
-+ Enable scroller to be moved by dragging it (not only by pressing arrow keys, e.g. in lists in puzzle selector)
-
-+ Find new color scheme/better artwork (not this ugly yellow)
-
-+ Do more thorough testing of puzzle validation
-
-+ Cleanup code (make naming more consistent, relocate certain functions/methods to more sensible locations, etc.)
