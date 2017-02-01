@@ -38,8 +38,6 @@ namespace Sokoban
     {
         public static int StandardTitleBarHeight = 50;
 
-        protected StateBase _stateMgr;
-
         SpriteFont _defaultFont;
         SpriteFont _font;
 
@@ -64,7 +62,7 @@ namespace Sokoban
         Rectangle _leftBorderRect;
         Rectangle _titleBarRect;
 
-        FormMgr _parent;
+        protected FormMgr _parent;
 
         bool _titleBar;
 
@@ -82,6 +80,7 @@ namespace Sokoban
         int _innerAbsX, _innerAbsY;
 
         protected List<Button> _buttons;
+        protected List<Clickable> _clickables;
         protected List<XNALabel> _labels;
 
         bool Draggable = true;
@@ -108,6 +107,7 @@ namespace Sokoban
             Initialize();
 
             Height = height;
+
         }
 
         private void _initArgs(int x, int y, int width, int height, string title, bool titleBar)
@@ -119,8 +119,6 @@ namespace Sokoban
 
             _mainOuterRect = new Rectangle(0, 0, width, height);
             _mainRect = new Rectangle(_x, _y, width, height);
-            //_mainInnerRect = new Rectangle(_mainBorderWidth, _mainBorderWidth, 
-            //                                width - _mainBorderWidth * 2, height - _mainBorderWidth * 2);
             _mainTitleBarRect = new Rectangle(0, 0, width - 2 * _mainBorderWidth, height - 2 * _mainBorderWidth);
             _mainInnerRect = new Rectangle(0, 0, 
                                             width - _mainBorderWidth * 2, height - _mainBorderWidth * 2 - _titleBarHeight);
@@ -140,9 +138,6 @@ namespace Sokoban
             XAbs = X;
             YAbs = Y;
 
-            //InnerXAbs = X + _mainBorderWidth;
-            //InnerYAbs = Y + _mainBorderWidth + _titleBarHeight;
-
             XNAForm parent = _parent as XNAForm;
 
             if (parent != null)
@@ -150,8 +145,6 @@ namespace Sokoban
                 XAbs += parent.InnerXAbs;
                 YAbs += parent.InnerYAbs;
 
-                //InnerXAbs += parent.InnerXAbs;
-                //InnerYAbs += parent.InnerYAbs;
             }
         }
 
@@ -256,6 +249,11 @@ namespace Sokoban
             _buttons.Add(button);
         }
 
+        public virtual void AddClickable(Clickable clickable)
+        {
+            _clickables.Add(clickable);
+        }
+
         public virtual void AddLabel(XNALabel label)
         {
             _labels.Add(label);
@@ -286,10 +284,29 @@ namespace Sokoban
             _titleBarRect = new Rectangle(0, 0, _mainInnerRect.Width, _titleBarHeight);
         }
 
+        public bool MouseOnThis()
+        {
+            var parentForm = _parent as XNAForm;
+
+            int innerXAbs, innerYAbs;
+
+            innerXAbs = 0;
+            innerYAbs = 0;
+
+            if (parentForm != null)
+            {
+                innerXAbs = parentForm.InnerXAbs;
+                innerYAbs = parentForm.InnerYAbs;
+            }
+
+            return Utilities.MouseOnRect(_mainRect, innerXAbs, innerYAbs);
+        }
+
         protected virtual void Initialize()
         {
             _buttons = new List<Button>();
             _labels = new List<XNALabel>();
+            _clickables = new List<Clickable>();
 
             _defaultFont = _gameMgr.Content.Load<SpriteFont>("Courier New");
             _font = _defaultFont;
@@ -344,7 +361,6 @@ namespace Sokoban
             set
             {
                 _mainBorderWidth = value;
-                //_updateBorderRects();
                 Width = Width;
                 Height = Height;
                 _setAbsXY();
@@ -407,7 +423,6 @@ namespace Sokoban
             set
             {
                 _mainRect.X = value;
-                //_mainInnerRect.X = value + _mainBorderWidth;
                 _setAbsXY();
             }
         }
@@ -422,7 +437,6 @@ namespace Sokoban
             set
             {
                 _mainRect.Y = value;
-                //_mainInnerRect.Y = value + _mainBorderWidth;
                 _setAbsXY();
             }
         }
@@ -538,36 +552,6 @@ namespace Sokoban
             _baseTexture = _gameMgr.Content.Load<Texture2D>("WhiteBlock");
         }
 
-        /*
-        public void DrawBase()
-        {
-
-            _gameMgr.DrawSprite(_baseTexture, _mainOuterRect, _borderColor);
-
-            _gameMgr.SpriteBatch.End();
-
-            SetRenderTarget(renderTargetInner);
-
-            _gameMgr.SpriteBatch.Begin();
-
-            _gameMgr.DrawSprite(_baseTexture, _mainInnerRect, _baseColor);
-
-            if (_showTitleBar)
-            {
-                _gameMgr.DrawSprite(_baseTexture, _titleBarRect, _titleBarColor);
-                _gameMgr.DrawString(_font, _title, new Vector2(10, (_titleBarHeight - _fontHeight) / 2), Color.Black, 1.0f);
-            }
-
-            //_gameMgr.DrawSprite(_baseTexture, new Rectangle(50, 50, 100, 100), Color.Black);
-                        
-            
-            //_gameMgr.DrawSprite(_baseTexture, _topBorderRect, _borderColor);
-            //_gameMgr.DrawSprite(_baseTexture, _rightBorderRect, _borderColor);
-            //_gameMgr.DrawSprite(_baseTexture, _bottomBorderRect, _borderColor);
-            //_gameMgr.DrawSprite(_baseTexture, _leftBorderRect, _borderColor);
-        }
-        */
-
         public void DrawBase()
         {
 
@@ -587,27 +571,11 @@ namespace Sokoban
 
             _gameMgr.SpriteBatch.End();
 
-            /*
-            SetRenderTarget(renderTargetOuter);
-
-            _gameMgr.SpriteBatch.Begin();
-
-            _gameMgr.DrawSprite(renderTargetTitleBar, _mainTitleBarRect, Color.White);
-
-            _gameMgr.SpriteBatch.End();
-            */
             SetRenderTarget(renderTargetInner);
 
             _gameMgr.SpriteBatch.Begin();
 
             _gameMgr.DrawSprite(_baseTexture, _mainInnerRect, _baseColor);
-            //_gameMgr.DrawSprite(_baseTexture, new Rectangle(50, 50, 100, 100), Color.Black);
-                        
-            
-            //_gameMgr.DrawSprite(_baseTexture, _topBorderRect, _borderColor);
-            //_gameMgr.DrawSprite(_baseTexture, _rightBorderRect, _borderColor);
-            //_gameMgr.DrawSprite(_baseTexture, _bottomBorderRect, _borderColor);
-            //_gameMgr.DrawSprite(_baseTexture, _leftBorderRect, _borderColor);
         }
 
         public virtual void DrawMisc(GameTime gameTime)
@@ -634,6 +602,11 @@ namespace Sokoban
             foreach (Button button in _buttons)
             {
                 button.Draw();
+            }
+
+            foreach (Clickable click in _clickables)
+            {
+                click.Draw();
             }
 
             DrawMisc(gameTime);
@@ -667,6 +640,11 @@ namespace Sokoban
             foreach (Button button in _buttons)
             {
                 button.Update();
+            }
+
+            foreach (Clickable click in _clickables)
+            {
+                click.Update();
             }
 
 

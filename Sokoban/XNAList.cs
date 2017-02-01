@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-/*
- * TODO Implement form that can scroll over a grid of objects/widgets
- */
 
 namespace Sokoban
 {
@@ -46,7 +43,6 @@ namespace Sokoban
 
             _scrollBar = new Sokoban.ScrollBar(_scrollerWidth, this);
             _scrollBar.BaseColor = Color.LightGray;
-            //_scrollBar.BorderWidth = 1;
 
             AddForm(_scrollBar);
         }
@@ -59,13 +55,19 @@ namespace Sokoban
             }
         }
 
-        public void ElementClicked(XNAListElement element)
+        public void ElementClicked(object elementObj, ButtonEventArgs args)
         {
+            Console.WriteLine("Element clicked");
+
+            var element = elementObj as XNAListElement;
             if (_activeElement != null)
+            {
                 _activeElement.MakeInactive();
+
+                Console.WriteLine("Element not null");
+            }
             _activeElement = element;
             _activeElement.MakeActive();
-
         }
 
         private IEnumerable<XNAListElement> GetReserves()
@@ -126,6 +128,7 @@ namespace Sokoban
 
         public void AddElement(XNAListElement element)
         {
+            element.EventCalls += ElementClicked;
             element.Parent = this;
             element.MakeInactive();
             _elements.Add(element);
@@ -145,6 +148,8 @@ namespace Sokoban
         {
             _elements.Remove(element);
 
+            element.EventCalls -= ElementClicked;
+
             if (_reserveElementsDown.Count > 0)
             {
                 _elements.Add(_reserveElementsDown[0]);
@@ -158,6 +163,15 @@ namespace Sokoban
             _updateElementPosses();
         }
 
+        public void DeactivateActiveElement()
+        {
+            if (_activeElement != null)
+            {
+                _activeElement.MakeInactive();
+                _activeElement = null;
+            }
+        }
+
         public XNAListElement RemoveActiveElement()
         {
             if (_activeElement == null)
@@ -166,6 +180,7 @@ namespace Sokoban
             RemoveElement(_activeElement);
 
             XNAListElement returnElement = _activeElement;
+            _activeElement.MakeInactive();
             _activeElement = null;
 
             return returnElement;
@@ -241,6 +256,46 @@ namespace Sokoban
 
                 _updateElementSizes();
                 _updateElementPosses();
+            }
+        }
+
+        public int ElementsAboveCount
+        {
+            get
+            {
+                return _reserveElementsUp.Count;
+            }
+        }
+
+        public int ElementsBelowCount
+        {
+            get
+            {
+                return _reserveElementsDown.Count;
+            }
+        }
+
+        public int ElementsViewedCount
+        {
+            get
+            {
+                return _elements.Count;
+            }
+        }
+
+        public int AllElementsCount
+        {
+            get
+            {
+                return ElementsViewedCount + ElementsBelowCount + ElementsAboveCount;
+            }
+        }
+
+        public XNAListElement ActiveElement
+        {
+            get
+            {
+                return _activeElement;
             }
         }
 

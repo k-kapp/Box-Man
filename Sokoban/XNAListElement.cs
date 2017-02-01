@@ -12,22 +12,17 @@ namespace Sokoban
 {
     public class XNAListElement : Clickable
     {
-        Color _activeColor, _inactiveColor, _drawColor;
-
-        Texture2D _background;
 
         new XNAList _parent;
 
-        bool active = false;
-
-        public XNAListElement(XNAList parent) : base(0, 0, parent.ElementsWidth, parent.ElementsHeight, false, parent)
+        public XNAListElement(XNAList parent) : base(0, 0, parent.ElementsWidth, parent.ElementsHeight, ClickType.DOWN, parent)
         {
             _parent = parent;
 
-            _activeColor = Color.Gray;
-            _inactiveColor = Color.White;
+            _activeCol = Color.Gray;
+            _inactiveCol = Color.White;
 
-            _drawColor = _inactiveColor;
+            _drawCol = _inactiveCol;
         }
 
         public XNAListElement(Texture2D background, XNAList parent) : this(parent)
@@ -46,10 +41,10 @@ namespace Sokoban
         {
             set
             {
-                _activeColor = value;
+                _activeCol = value;
 
                 if (active)
-                    _drawColor = _activeColor;
+                    _drawCol = _activeCol;
             }
         }
 
@@ -57,10 +52,10 @@ namespace Sokoban
         {
             set
             {
-                _inactiveColor = value;
+                _inactiveCol = value;
 
                 if (!active)
-                    _drawColor = _inactiveColor;
+                    _drawCol = _inactiveCol;
             }
         }
 
@@ -141,6 +136,11 @@ namespace Sokoban
 
                 base._parent = value;
             }
+
+            get
+            {
+                return _parent;
+            }
         }
 
         public void SetPosition(int index)
@@ -157,27 +157,8 @@ namespace Sokoban
 
         public override void OnClick()
         {
-            Console.WriteLine("List element clicked");
-            _parent.ElementClicked(this);
+            base.OnClick();
         }
 
-        public void MakeInactive()
-        {
-            active = false;
-            Console.WriteLine("Making inactive");
-            _drawColor = _inactiveColor;
-        }
-
-        public void MakeActive()
-        {
-            active = true;
-            Console.WriteLine("Making active");
-            _drawColor = _activeColor;
-        }
-
-        public override void Draw()
-        {
-            _gameMgr.DrawSprite(_background, _mainRect, _drawColor);
-        }
     }
 }

@@ -81,6 +81,14 @@ namespace Sokoban
             formsRemove.Clear();
         }
 
+        public virtual void RemoveAllForms()
+        {
+            foreach (var form in forms)
+            {
+                RemoveForm(form);
+            }
+        }
+
         public virtual void AddForms()
         {
             foreach (XNAForm form in formsAdd)

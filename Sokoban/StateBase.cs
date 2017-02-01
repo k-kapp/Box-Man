@@ -78,6 +78,15 @@ namespace Sokoban
             }
         }
 
+        public override void RemoveAllForms()
+        {
+            base.RemoveAllForms();
+            foreach (var popup in popups)
+            {
+                RemoveForm(popup);
+            }
+        }
+
         public override void AddForms()
         {
             base.AddForms();
@@ -90,7 +99,10 @@ namespace Sokoban
         {
             base.RemoveForms();
             foreach (var popup in popupsRemove)
+            {
+                Console.WriteLine("Removing popup");
                 popups.Remove(popup);
+            }
             popupsRemove.Clear();
         }
 
@@ -103,6 +115,7 @@ namespace Sokoban
             }
             else
                 _update = true;
+            UpdateMisc(gameTime);
             base.Update(gameTime);
         }
 

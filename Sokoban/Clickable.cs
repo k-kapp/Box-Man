@@ -10,8 +10,19 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Sokoban
 {
+    public enum ClickType
+    {
+        RELEASE,
+        DOWN,
+        DRAG
+    }
+
     public abstract class Clickable
     {
+        public delegate void ButtonClickCallback(object caller, ButtonEventArgs args);
+
+        public event ButtonClickCallback EventCalls = delegate { };
+
         protected Rectangle _mainRect;
         protected GameMgr _gameMgr;
         protected XNAForm _parent;
@@ -21,11 +32,21 @@ namespace Sokoban
         protected bool _clickedUp;
         protected bool _clickedDown;
 
-        protected bool _mouseButtonRelease;
+        protected ClickType _type;
 
-        public Clickable(int x, int y, int width, int height, bool mouseButtonRelease, XNAForm parent)
+        protected Texture2D _background;
+        protected Color _drawCol, _activeCol, _inactiveCol;
+        protected bool active;
+
+        public Clickable(int x, int y, int width, int height, ClickType type, XNAForm parent)
         {
-            _mouseButtonRelease = mouseButtonRelease;
+            _type = type;
+
+            active = false;
+
+            _drawCol = Color.White;
+            _activeCol = Color.White;
+            _inactiveCol = Color.White;
 
             _mainRect = new Rectangle(x, y, width, height);
             _parent = parent;
@@ -34,26 +55,9 @@ namespace Sokoban
             held = false;
         }
 
-        public abstract void OnClick();
-
         public bool MouseOnClickable()
         {
-            MouseState mstate = Mouse.GetState();
-
-            Point mPos = mstate.Position;
-
-            mPos.X = mPos.X - _parent.InnerXAbs;
-            mPos.Y = mPos.Y - _parent.InnerYAbs;
-
-            if ((mPos.X > _mainRect.X) && (mPos.X < _mainRect.X + _mainRect.Width)
-                    && (mPos.Y > _mainRect.Y) && (mPos.Y < _mainRect.Y + _mainRect.Height))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Utilities.MouseOnRect(_mainRect, _parent.InnerXAbs, _parent.InnerYAbs);
         }
 
         public virtual void Update()
@@ -61,7 +65,7 @@ namespace Sokoban
             _clickedUp = clickedUp();
             _clickedDown = clickedDown();
 
-            if (_mouseButtonRelease)
+            if (_type == ClickType.RELEASE)
             {
                 if (_clickedUp)
                     OnClick();
@@ -77,7 +81,12 @@ namespace Sokoban
             held = mstate.LeftButton == ButtonState.Pressed;
         }
 
-        public abstract void Draw();
+        public virtual void OnClick()
+        {
+            ButtonEventArgs args = new ButtonEventArgs();
+
+            EventCalls(this, args);
+        }
 
         public bool ClickedUp
         {
@@ -118,8 +127,9 @@ namespace Sokoban
             if (!MouseOnClickable())
                 return false;
 
-            if (held)
-                return false;
+            if (_type == ClickType.DOWN)
+                if (held)
+                    return false;
 
             MouseState mstate = Mouse.GetState();
 
@@ -138,5 +148,114 @@ namespace Sokoban
                 return _parent;
             }
         }
+
+        public virtual void Draw()
+        {
+            _parent.GameMgr.DrawSprite(_background, _mainRect, _drawCol);
+        }
+
+        public Texture2D BackgroundTexture
+        {
+            get
+            {
+                return _background;
+            }
+
+            set
+            {
+                _background = value;
+            }
+        }
+
+        public Color ActiveColor
+        {
+            get
+            {
+                return _activeCol;
+            }
+
+            set
+            {
+                _activeCol = value;
+            }
+        }
+
+        public Color InactiveColor
+        {
+            get
+            {
+                return _inactiveCol;
+            }
+
+            set
+            {
+                _inactiveCol = value;
+            }
+        }
+
+        public void MakeInactive()
+        {
+            active = false;
+            _drawCol = _inactiveCol;
+        }
+
+        public void MakeActive()
+        {
+            active = true;
+            _drawCol = _activeCol;
+        }
+
+        public virtual int X
+        {
+            set
+            {
+                _mainRect.X = value;
+            }
+
+            get
+            {
+                return _mainRect.X;
+            }
+        }
+
+        public virtual int Y
+        {
+            set
+            {
+                _mainRect.Y = value;
+            }
+
+            get
+            {
+                return _mainRect.Y;
+            }
+        }
+
+        public virtual int Width
+        {
+            set
+            {
+                _mainRect.Width = value;
+            }
+
+            get
+            {
+                return _mainRect.Width;
+            }
+        }
+
+        public virtual int Height
+        {
+            set
+            {
+                _mainRect.Height = value;
+            }
+
+            get
+            {
+                return _mainRect.Height;
+            }
+        }
+
     }
 }

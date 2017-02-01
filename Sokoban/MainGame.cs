@@ -78,25 +78,26 @@ namespace Sokoban
         private void _initialize()
         {
 
+            ImportTextures();
+
+            _selectMap(false);
+
+            return;
+
             if (_gameMgr.PuzzlePaths.Count == 0)
             {
                 _gameMgr.MainMenuCallback(null, null);
                 return;
             }
 
-            //_grid = new PuzzleGrid("test1.txt");
             _grid = new PuzzleGrid(_gameMgr.PuzzlePaths[currMapNum], FileFormat.DAT, _gameMgr);
             _grid.TileSize = _tileSize;
-            //_currLevelFilename = _grid.GridFilepath;
-
-            //_grid.Serialize();
 
             _up.PrevDown = false;
             _right.PrevDown = false;
             _down.PrevDown = false;
             _left.PrevDown = false;
 
-            ImportTextures();
 
             //forms = new List<XNAForm>();
             //LoadContent();
@@ -117,24 +118,79 @@ namespace Sokoban
 
         private void _mapDone()
         {
-            currMapNum++;
+            var popup = PopupDialog.MakePopupDialog("Map completed!", "Success", true, this);
 
-            if (currMapNum >= _gameMgr.PuzzlePaths.Count)
+            Console.WriteLine("Creating map done popup");
+            AddForm(popup);
+
+            if (_grid.Filepath != _gameMgr.PuzzlePaths[_gameMgr.PuzzlePaths.Count - 1])
             {
-                _gameMgr.MainMenuCallback(null, null);
-                return;
+                Button.ButtonClickCallback NextMapCallback = (sender, args) => { _nextMap(); Utilities.ClickableDestroyParent(sender, args); };
+                popup.AddButton(0, 0, NextMapCallback, "Next map");
             }
 
-            _grid = new PuzzleGrid(_gameMgr.PuzzlePaths[currMapNum], FileFormat.DAT, _gameMgr);
-            _grid.TileSize = _tileSize;
-            //_currLevelFilename = _grid.GridFilepath;
+            Button.ButtonClickCallback selectMapCallback = (sender, args) => { Utilities.ClickableDestroyParent(sender, args); _selectMap(); };
+            popup.AddButton(0, 0, selectMapCallback, "Select map");
+            popup.AddButton(0, 0, ExitToMainMenu, "Exit to main menu");
 
-            //_grid.Serialize();
+            _gameMgr.centerFormX(popup);
+            _gameMgr.centerFormY(popup);
+        }
+
+        private void _nextMap(string filepath = "")
+        {
+            if (filepath != "")
+            {
+                currMapNum = _gameMgr.PuzzlePaths.IndexOf(filepath);
+                _grid = new Sokoban.PuzzleGrid(filepath, FileFormat.DAT, _gameMgr);
+            }
+            else
+            {
+                currMapNum++;
+
+                if (currMapNum >= _gameMgr.PuzzlePaths.Count)
+                {
+                    _gameMgr.MainMenuCallback(null, null);
+                    return;
+                }
+
+                _grid = new PuzzleGrid(_gameMgr.PuzzlePaths[currMapNum], FileFormat.DAT, _gameMgr);
+            }
+
+            _grid.TileSize = _tileSize;
 
             _up.PrevDown = false;
             _right.PrevDown = false;
             _down.PrevDown = false;
             _left.PrevDown = false;
+        }
+
+        private void _selectMap(bool inGame = true)
+        {
+            XNAForm selectForm = new XNAForm(0, 0, 450, 600, this, "Select map", true);
+            PuzzleList list = new PuzzleList(20, 10, 300, 450, "Active puzzles", 5, selectForm);
+
+            selectForm.AddForm(list);
+
+            if (inGame)
+            {
+                Button cancelButton = new Button("Cancel", 200, 490, 100, 50, selectForm);
+                Button.ButtonClickCallback cancelSelect = (sender, args) => { var button = sender as Button; button.Parent.Destroy(); _mapDone(); };
+                cancelButton.EventCalls += cancelSelect;
+                selectForm.AddButton(cancelButton);
+            }
+
+            Button okButton = new Button("OK", 50, 490, 100, 50, selectForm);
+            Button.ButtonClickCallback selected = (sender, args) => { var puzzleEl = list.ActiveElement as PuzzleListElement; RemoveAllForms(); _nextMap(puzzleEl.Filepath); };
+            okButton.EventCalls += selected;
+            selectForm.AddButton(okButton);
+
+            foreach(string path in _gameMgr.PuzzlePaths)
+            {
+                list.AddElement(path);
+            }
+
+            AddForm(selectForm);
         }
 
         private void _drawTile(int row, int column, Tile tile)
@@ -176,9 +232,11 @@ namespace Sokoban
 
         public override void Draw(GameTime gameTime)
         {
-
-            _grid.DrawGrid();
-            drawMan(gameTime);
+            if (_grid != null)
+            {
+                _grid.DrawGrid();
+                drawMan(gameTime);
+            }
 
             if (forms.Count + popups.Count == 0)
                 ShowCursor = false;
@@ -231,17 +289,11 @@ namespace Sokoban
             AddForm(popup);
         }
 
-        /*
-        * Allows the game to run logic such as updating the world,
-        * checking for collisions, gathering input, and playing audio.
-        * </summary>
-        * <param name="gameTime">Provides a snapshot of timing values.</param>
-        */
-        public override void Update(GameTime gameTime)
+        public override void UpdateMisc(GameTime gameTime)
         {
-            base.Update(gameTime);
+            base.UpdateMisc(gameTime);
 
-            if (!_update)
+            if (!_update || _grid == null)
                 return;
 
             KeyboardState state = Keyboard.GetState();
@@ -330,9 +382,9 @@ namespace Sokoban
 
             if (_grid.NumTargets() == 0)
             {
+                Console.WriteLine("Entering _mapDone...");
                 _mapDone();
             }
-
 
         }
 

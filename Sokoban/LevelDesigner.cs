@@ -18,18 +18,34 @@ namespace Sokoban
         int _saveButtonsSizeX = 100;
         int _saveButtonsSpaceX = 35;
 
+        const int borderWidth = 5;
+
         Tile _cursorPaint = new Tile(false, Occpr.VOID);
+
+        List<Texture2D> paintTextures;
 
         XNAForm _designForm;
         XNAForm _designGridForm;
         XNAForm _toolbar;
 
+        Texture2D _cursorTexture;
+        Texture2D _erasedTexture;
+
         int _toolbarButtonSize = 70;
         int _gridTileSize = 50;
 
+        Tile _humanTile;
+        PaintButton _humanButton;
+
         public LevelDesigner(int rows, int cols, GameMgr gameMgr) : base(gameMgr)
         {
+
+            paintTextures = new List<Texture2D>();
             _grid = new Sokoban.PuzzleGrid(rows, cols, _gameMgr);
+
+            _cursorTexture = Utilities.StdCursorTexture;
+
+            _erasedTexture = _gameMgr.Content.Load<Texture2D>("WhiteBlock");
 
             _rows = rows;
             _cols = cols;
@@ -50,21 +66,49 @@ namespace Sokoban
             _makeButtons();
         }
 
+        private bool _paintSelected()
+        {
+            return paintTextures.Contains(Utilities.CursorTexture);
+        }
+
         public void CellButtonClicked(object sender, ButtonEventArgs args)
         {
-            Button senderButton = sender as Button;
-            senderButton.BackgroundTexture = Utilities.CursorTexture;
+            if (!_paintSelected())
+                return;
+
+            PaintButton senderButton = sender as PaintButton;
 
             int row = senderButton.Y / _gridTileSize;
             int col = senderButton.X / _gridTileSize;
 
+            if (_cursorPaint.State == Occpr.HUMAN)
+            {
+                if (_humanTile != null)
+                {
+                    _humanTile.State = Occpr.EMPTY;
+                    _humanButton.BackgroundTexture = paintTextures[1];   // make these indices enums, for better readability. index 1 refers to the empty texture
+                }
+            }
+
             _grid[row, col] = new Tile(_cursorPaint.Target, _cursorPaint.State);
+            if (_cursorPaint.State == Occpr.VOID)
+            {
+                senderButton.BackgroundTexture = _erasedTexture;
+            }
+            else
+                senderButton.BackgroundTexture = Utilities.CursorTexture;
+
+            if (_cursorPaint.State == Occpr.HUMAN)
+            {
+                _humanTile = _grid[row, col];
+                _humanButton = senderButton;
+            }
         }
 
         public void ToolbarButtonClicked(object sender, ButtonEventArgs args)
         {
             var senderButton = sender as Button;
-            Utilities.CursorTexture = senderButton.BackgroundTexture;
+            _cursorTexture = senderButton.BackgroundTexture;
 
             int senderXCatg = senderButton.X / _toolbarButtonSize;
 
@@ -83,8 +127,12 @@ namespace Sokoban
                     _cursorPaint = new Tile(true, Occpr.EMPTY);
                     break;
                 case (4):
+                    _cursorPaint = new Tile(false, Occpr.VOID);
+                    break;
+                case (5):
                     _cursorPaint = new Tile(false, Occpr.HUMAN);
                     break;
+                
             }
         }
 
@@ -92,31 +140,33 @@ namespace Sokoban
         {
             List<Tile[,]> allSaved = PuzzleGrid.DeSerializeAll("Puzzles");
 
-            Console.WriteLine("in savebuttonclicked");
-            Console.WriteLine("allsaved length: " + allSaved.Count.ToString());
+
+            if (!PuzzleGrid.IsValid(_grid.Tiles))
+            {
+                PopupDialog dialog = PopupDialog.MakePopupDialog("Puzzle invalid. Make sure that \n - It is enclosed by walls, and that all areas are reachable (not blocked by walls) \n - That the amount of targets equal the amount of crates (and that there are targets) \n - That there is a starting point (by using the 'man' button from the toolbar's far right)",
+                    "Puzzle invalid", true, this);
+                dialog.AddButton(0, 0, 0, 0, Utilities.ClickableDestroyParent, "OK");
+                _gameMgr.centerFormX(dialog);
+                _gameMgr.centerFormY(dialog);
+                AddForm(dialog);
+                return;
+            }
 
             foreach (Tile [,] tileArr in allSaved)
             {
                 if (PuzzleGrid.TilesEqual(tileArr, _grid.Tiles))
                 {
-                    Console.WriteLine("Making error dialog...");
                     PopupDialog dialog = PopupDialog.MakePopupDialog("Cannot save puzzle: Already exists", "Error", true, this);
                     Button.ButtonClickCallback callbackFunc = (senderArg, eventArgs) => _gameMgr.DestroyForm(dialog, senderArg, eventArgs);
                     dialog.AddButton(0, 0, _saveButtonsSizeX, _saveButtonsSizeY, callbackFunc, "OK");
                     _gameMgr.centerFormX(dialog);
                     _gameMgr.centerFormY(dialog);
                     AddForm(dialog);
-                    Console.WriteLine("Exiting savebuttondialog....");
                     return;
                 }
             }
 
-            Console.WriteLine("Serializing...");
-
             _grid.Serialize();
-
-            Console.WriteLine("Making success dialog....");
-
 
             PopupDialog savedDialog = PopupDialog.MakePopupDialog("Puzzle successfully saved", "Success", true, this);
             Button.ButtonClickCallback callback = (a, b) => GameMgr.DestroyForm(savedDialog, a, b);
@@ -125,8 +175,6 @@ namespace Sokoban
             _gameMgr.centerFormX(savedDialog);
             _gameMgr.centerFormY(savedDialog);
             AddForm(savedDialog);
-
-            Console.WriteLine("Exiting from Savebuttondialog....");
 
             var saveButton = sender as Button;
             saveButton.MakeInactive();
@@ -146,7 +194,8 @@ namespace Sokoban
             textureList.Add("Empty");
             textureList.Add("Crate");
             textureList.Add("Target");
-            _toolbar = new XNAForm(0, 0, _toolbarButtonSize * (textureList.Count + 1), _toolbarButtonSize, _designForm, "m", false);
+            textureList.Add("Eraser");
+            _toolbar = new XNAForm(0, 0, _toolbarButtonSize * (textureList.Count + 1) + 2*borderWidth, _toolbarButtonSize + 2*borderWidth, _designForm, "m", false);
             _addToolbarButtons(textureList);
 
             _designForm.AddForm(_toolbar);
@@ -157,7 +206,32 @@ namespace Sokoban
             for (int i = 0; i < textures.Count; i++)
             {
                 Button newButton = new Button("", i * _toolbarButtonSize, 0, _toolbarButtonSize, _toolbarButtonSize, ToolbarButtonClicked, _toolbar);
-                newButton.newBackground(_gameMgr.Content.Load<Texture2D>(textures[i]));
+                Texture2D addTexture;
+                if (textures[i] == "Eraser")
+                {
+                    addTexture = _gameMgr.Content.Load<Texture2D>("WhiteBlock");
+                    RenderTarget2D renderTarget = new RenderTarget2D(_gameMgr.GraphicsDevice, addTexture.Width, addTexture.Height);
+                    _gameMgr.SetRenderTarget(renderTarget);
+
+                    _gameMgr.SpriteBatch.Begin();
+
+                    _gameMgr.DrawSprite(addTexture, new Rectangle(0, 0, addTexture.Width, addTexture.Height), Color.White);
+                    _gameMgr.DrawSprite(_gameMgr.Content.Load<Texture2D>("Eraser"), new Rectangle(0, 0, addTexture.Width, addTexture.Height), Color.White);
+
+                    _gameMgr.SpriteBatch.End();
+
+                    _gameMgr.SetRenderTarget(null);
+
+                    addTexture = renderTarget;
+
+                }
+                else
+                {
+                    addTexture = _gameMgr.Content.Load<Texture2D>(textures[i]);
+                }
+                paintTextures.Add(addTexture);
+
+                newButton.newBackground(paintTextures[paintTextures.Count - 1]);
                 newButton.newActiveColor(Color.Gray);
                 newButton.newInactiveColor(Color.White);
                 _toolbar.AddButton(newButton);
@@ -171,22 +245,24 @@ namespace Sokoban
             newButtonMan.newActiveColor(Color.Gray);
             newButtonMan.newInactiveColor(Color.White);
             _toolbar.AddButton(newButtonMan);
+
+            paintTextures.Add(manTexture);
         }
 
         private void _makeDesignGrid()
         {
-            _designGridForm = new Sokoban.XNAForm(100, 100, _cols * _gridTileSize, _rows * _gridTileSize, _designForm, "", false);
+            _designGridForm = new Sokoban.XNAForm(100, 100, _cols * _gridTileSize + 2*borderWidth, _rows * _gridTileSize + 2*borderWidth, _designForm, "", false);
+            _designGridForm.BorderWidth = borderWidth;
             for (int row = 0; row < _rows; row++)
             {
                 for (int col = 0; col < _cols; col++)
                 {
-                    Button newButton = new Sokoban.Button("", col * _gridTileSize, row * _gridTileSize, _gridTileSize, _gridTileSize, 
-                                                            CellButtonClicked, _designGridForm);
-                    newButton.newActiveColor(Color.Gray);
-                    newButton.newInactiveColor(Color.White);
+                    PaintButton button = new Sokoban.PaintButton(col * _gridTileSize, row * _gridTileSize, _gridTileSize, _gridTileSize, _designGridForm);
+                    button.ActiveColor = Color.Gray;
+                    button.InactiveColor = Color.White;
+                    button.EventCalls += CellButtonClicked;
 
-                    newButton.MouseButtonReleaseEvent = false;
-                    _designGridForm.AddButton(newButton);
+                    _designGridForm.AddClickable(button);
                 }
             }
 
@@ -210,6 +286,14 @@ namespace Sokoban
         {
             base.Update(gameTime);
 
+            if (forms.Count == 1 && _update && popups.Count == 0 && _designGridForm.MouseOnThis())
+            {
+                Utilities.CursorTexture = _cursorTexture;
+            }
+            else
+            {
+                Utilities.CursorTexture = Utilities.StdCursorTexture;
+            }
         }
 
         public override void Draw(GameTime gameTime)

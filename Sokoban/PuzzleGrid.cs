@@ -133,6 +133,14 @@ namespace Sokoban
         public PuzzleGrid(int numRows, int numCols, GameMgr gameMgr)  : this(gameMgr)
         {
             _tiles = new Tile[numRows, numCols];
+
+            for (int row = 0; row < _tiles.GetLength(0); row++)
+            {
+                for (int col = 0; col < _tiles.GetLength(1); col++)
+                {
+                    _tiles[row, col] = new Tile(false, Occpr.VOID);
+                }
+            }
         }
 
         public static Tile MakeTile(char c)
@@ -318,6 +326,97 @@ namespace Sokoban
             }
 
             return true;
+        }
+
+        public static bool IsValid(Tile[,] tiles)
+        {
+            int numRows = tiles.GetLength(0);
+            int numCols = tiles.GetLength(1);
+
+            int startRow = -1;
+            int startCol = -1;
+            int totalEmpty = 0;
+            int numTargets = 0;
+            int numCrates = 0;
+            bool hasHuman = false;
+
+            for (int row = 0; row < numRows; row++)
+            {
+                for (int col = 0; col < numCols; col++)
+                {
+                    if (tiles[row, col].State == Occpr.EMPTY || tiles[row, col].State == Occpr.HUMAN || tiles[row, col].State == Occpr.CRATE)
+                    {
+                        if (totalEmpty == 0)
+                        {
+                            startRow = row;
+                            startCol = col;
+                        }
+                        totalEmpty++;
+                        //sanity check. Map editor already ensures that a starting point (i.e. HUMAN) is placed on the map
+                        if (tiles[row, col].State == Occpr.HUMAN)
+                        {
+                            hasHuman = true;
+                        }
+                        if (tiles[row, col].State == Occpr.CRATE)
+                        {
+                            numCrates++;
+                        }
+                        if (tiles[row, col].Target)
+                        {
+                            numTargets++;
+                        }
+                    }
+                }
+            }
+            
+            if (totalEmpty == 0 || !hasHuman || (numTargets != numCrates) || (numTargets == 0))
+            {
+                return false;
+            }
+
+            int count = 1;
+
+            bool[,] visitedArr = new bool[numRows, numCols];
+            visitedArr[startRow, startCol] = true;
+
+            LinkedList<Tuple<int, int>> stack = new LinkedList<Tuple<int, int>>();
+            stack.AddLast(new Tuple<int, int>(startRow, startCol));
+
+            while (stack.Count > 0)
+            {
+                int row = stack.Last.Value.Item1;
+                int col = stack.Last.Value.Item2;
+                stack.RemoveLast();
+                for (int rowAdd = -1; rowAdd <= 1; rowAdd++)
+                {
+                    for (int colAdd = -1; colAdd <= 1; colAdd++)
+                    {
+                        if (rowAdd == 0 && colAdd == 0)
+                        {
+                            continue;
+                        }
+                        int newRow = row + rowAdd;
+                        int newCol = col + colAdd;
+                        if (!Utilities.CoordValid(newRow, newCol, numRows, numCols))
+                        {
+                            return false;
+                        }
+                        if ((tiles[newRow, newCol].State == Occpr.VOID) && (Math.Abs(rowAdd) + Math.Abs(colAdd) == 1))
+                        {
+                            return false;
+                        }
+                        if ((tiles[newRow, newCol].State == Occpr.EMPTY || tiles[newRow, newCol].State == Occpr.HUMAN || tiles[newRow, newCol].State == Occpr.CRATE) && 
+                            !visitedArr[newRow, newCol])
+                        {
+                            stack.AddLast(new Tuple<int, int>(newRow, newCol));
+                            visitedArr[newRow, newCol] = true;
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            return count == totalEmpty;
         }
 
         private void _initVars()

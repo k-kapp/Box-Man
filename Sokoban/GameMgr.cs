@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,12 +16,47 @@ namespace Sokoban
 
     public static class Utilities
     {
+        public static Texture2D StdCursorTexture;
         public static Texture2D CursorTexture;
+
 
         public static void DrawCursor(GameMgr gameMgr)
         {
             MouseState mstate = Mouse.GetState();
             gameMgr.DrawSprite(CursorTexture, new Rectangle(mstate.Position, new Point(20, 20)), Color.White);
+        }
+
+        public static bool MouseOnRect(Rectangle rect, int innerXAbs, int innerYAbs)
+        {
+            MouseState mstate = Mouse.GetState();
+
+            Point mPos = mstate.Position;
+
+            mPos.X = mPos.X - innerXAbs;
+            mPos.Y = mPos.Y - innerYAbs;
+
+            if ((mPos.X > rect.X) && (mPos.X < rect.X + rect.Width)
+                    && (mPos.Y > rect.Y) && (mPos.Y < rect.Y + rect.Height))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public static void ClickableDestroyParent(object sender, ButtonEventArgs arg)
+        {
+            var clickable = sender as Clickable;
+
+            clickable.Parent.Destroy();
+        }
+
+        public static bool CoordValid(int row, int col, int numRows, int numCols)
+        {
+            return !(row < 0 || col < 0 || row >= numRows || col >= numCols);
         }
     }
 
@@ -42,6 +80,8 @@ namespace Sokoban
 
         public List<string> PuzzlePaths;
 
+        public const string ActivePuzzlesPathsFilepath = "ActivePuzzles.dat";
+
         public GameMgr(int screenWidth, int screenHeight)
         {
 
@@ -51,7 +91,7 @@ namespace Sokoban
             ScreenWidth = screenWidth;
             ScreenHeight = screenHeight;
 
-            PuzzlePaths = new List<string>();
+            //PuzzlePaths = new List<string>();
         }
 
         public int ScreenWidth
@@ -212,6 +252,67 @@ namespace Sokoban
             return _menu;
         }
 
+        private void _setActivePuzzlePaths()
+        {
+            FileStream fs;
+            try
+            {
+                fs = new FileStream(ActivePuzzlesPathsFilepath, FileMode.Open);
+            }
+            catch (FileNotFoundException e)
+            {
+                PuzzlePaths = new List<string>();
+                return;
+            }
+
+            BinaryFormatter bf = new BinaryFormatter();
+
+            PuzzlePaths = (List<string>)bf.Deserialize(fs);
+
+            fs.Close();
+
+        }
+
+        private void _checkPuzzlesExist()
+        {
+            FileStream fs = null;
+
+            List<string> removePaths = new List<string>();
+
+            foreach (var path in PuzzlePaths)
+            {
+                try
+                {
+                    fs = new FileStream(path, FileMode.Open);
+                }
+                catch (FileNotFoundException e)
+                {
+                    removePaths.Add(path);
+                }
+                finally
+                {
+                    if (fs != null)
+                        fs.Close();
+                }
+            }
+
+            foreach (var path in removePaths)
+            {
+                PuzzlePaths.Remove(path);
+            }
+
+            if (removePaths.Count > 0)
+            {
+                fs = new FileStream(ActivePuzzlesPathsFilepath, FileMode.Create);
+
+                BinaryFormatter bf = new BinaryFormatter();
+
+                bf.Serialize(fs, PuzzlePaths);
+
+                fs.Close();
+            }
+        }
+
         public void SetRenderTarget(RenderTarget2D target)
         {
             GraphicsDevice.SetRenderTarget(target);
@@ -225,6 +326,10 @@ namespace Sokoban
 
             int menuHeight = 800;
             int menuWidth = 400;
+
+            Utilities.StdCursorTexture = Content.Load<Texture2D>("StandardCursor");
+
+            _setActivePuzzlePaths();
 
             _currState = _makeMainMenu();
 

@@ -41,12 +41,14 @@
     <Compile Include="Button.cs" />
     <Compile Include="ButtonTest.cs" />
     <Compile Include="Clickable.cs" />
+    <Compile Include="DesignGridForm.cs" />
     <Compile Include="FormMgr.cs" />
     <Compile Include="GameMgr.cs" />
     <Compile Include="LevelDesigner.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Menu.cs" />
+    <Compile Include="PaintButton.cs" />
     <Compile Include="PopupDialog.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

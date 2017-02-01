@@ -18,20 +18,13 @@ namespace Sokoban
     
     public class Button : Clickable
     {
-        public delegate void ButtonClickCallback(object caller, ButtonEventArgs args);
-
-        public event ButtonClickCallback EventCalls = delegate { };
 
         int _horizOffset = 0;
         int _vertOffset = 0;
 
         string _text;
-        ButtonClickCallback _callback;
-        bool _buttonHeld;
 
-
-        Color _stringCol, _activeCol, _inactiveCol;
-        Color _drawCol;
+        Color _stringCol;
 
         Vector2 _stringPos;
 
@@ -40,13 +33,11 @@ namespace Sokoban
 
         int _textHeight, _textWidth;
 
-        Texture2D _background;
-
         float _scale = 1.5f;
 
         public bool MouseButtonReleaseEvent = true;
 
-        public Button(string text, int x, int y, int width, int height, XNAForm parent) : base(x, y, width, height, true, parent)
+        public Button(string text, int x, int y, int width, int height, XNAForm parent) : base(x, y, width, height, ClickType.RELEASE, parent)
         {
             _gameMgr = _parent.GameMgr;
 
@@ -75,59 +66,39 @@ namespace Sokoban
             _inactiveCol = color;
         }
 
-        public int X
+        public override int X
         {
             set
             {
-                _mainRect.X = value;
+                base.X = value;
                 updateStringPos();
-            }
-
-            get
-            {
-                return _mainRect.X;
             }
         }
 
-        public int Y
+        public override int Y
         {
             set
             {
-                _mainRect.Y = value;
+                base.Y = value;
                 updateStringPos();
-            }
-
-            get
-            {
-                return _mainRect.Y;
             }
         }
 
-        public int Width
+        public override int Width
         {
             set
             {
-                _mainRect.Width = value;
+                base.Width = value;
                 updateStringPos();
-            }
-
-            get
-            {
-                return _mainRect.Width;
             }
         }
 
-        public int Height
+        public override int Height
         {
             set
             {
-                _mainRect.Height = value;
+                base.Height = value;
                 updateStringPos();
-            }
-
-            get
-            {
-                return _mainRect.Height;
             }
         }
 
@@ -166,8 +137,6 @@ namespace Sokoban
 
         protected void Initialize()
         {
-            _buttonHeld = false;
-
             _stringCol = Color.White;
             _inactiveCol = Color.Red;
             _activeCol = Color.OrangeRed;
@@ -176,57 +145,16 @@ namespace Sokoban
 
             _font = _gameMgr.Content.Load<SpriteFont>("Courier New");
             _textHeight = (int)(_font.MeasureString(_text).Y*_scale);
-            _textWidth = (int)(_font.MeasureString(_text).X*_scale);
-
-
-            Console.WriteLine("Button X pos: " + _mainRect.X.ToString());
-            Console.WriteLine("Button Y pos: " + _mainRect.Y.ToString());
+            _textWidth = (int)(_font.MeasureString(_text).X * _scale);
 
             updateStringPos();
-
-            Console.WriteLine("textwidth: " + _textWidth.ToString());
-            Console.WriteLine("textheight: " + _textHeight.ToString());
         }
 
-        public override void OnClick()
-        {
-            //Console.WriteLine("Button clicked");
-
-            ButtonEventArgs args = new ButtonEventArgs();
-            /*
-            _callback(this, args);
-            */
-
-            EventCalls(this, args);
-        }
 
         public override void Draw()
         {
-            _gameMgr.DrawSprite(_background, _mainRect, _drawCol);
+            base.Draw();
             _gameMgr.SpriteBatch.DrawString(_font, _text, _stringPos, _stringCol, 0, new Vector2(0, 0), _scale, 0, 0);
-        }
-
-        public Texture2D BackgroundTexture
-        {
-            get
-            {
-                return _background;
-            }
-
-            set
-            {
-                _background = value;
-            }
-        }
-
-        public void MakeInactive()
-        {
-            _drawCol = _inactiveCol;
-        }
-
-        public void MakeActive()
-        {
-            _drawCol = _activeCol;
         }
 
         public override void Update()
@@ -244,63 +172,5 @@ namespace Sokoban
 
         }
 
-        /*
-        public virtual void Update()
-        {
-            MouseState mstate = Mouse.GetState();
-            Point mPos = mstate.Position;
-
-
-            mPos.X = mPos.X - _parent.InnerXAbs;
-            mPos.Y = mPos.Y - _parent.InnerYAbs;
-
-            if (false)
-            {
-                Console.WriteLine("Button text: " + _text);
-                Console.WriteLine("Mouse position: " + mPos.X);
-                Console.WriteLine(mPos.Y);
-                Console.WriteLine("Parent XAbs: " + _parent.XAbs);
-                Console.WriteLine("Parent YAbs: " + _parent.YAbs);
-                Console.WriteLine("Parent InnerXAbs: " + _parent.InnerXAbs);
-                Console.WriteLine("Parent InnerYAbs: " + _parent.InnerYAbs);
-            }
-
-            if ((mPos.X > _mainRect.X) && (mPos.X < _mainRect.X + _mainRect.Width)
-                    && (mPos.Y > _mainRect.Y) && (mPos.Y < _mainRect.Y + _mainRect.Height))
-            {
-                _drawCol = _activeCol;
-                //Console.WriteLine("Making Color red. Text of button: " + _text);
-                if (MouseButtonReleaseEvent)
-                {
-                    if (_buttonHeld && mstate.LeftButton == ButtonState.Released)
-                    {
-                        OnClick();
-                    }
-                    else if (mstate.LeftButton == ButtonState.Pressed)
-                    {
-                        _buttonHeld = true;
-                    }
-                }
-                else
-                {
-                    if (mstate.LeftButton == ButtonState.Pressed)
-                    {
-                        OnClick();
-                    }
-                }
-            }
-            else
-            {
-                _drawCol = _inactiveCol;
-            }
-
-            if (mstate.LeftButton == ButtonState.Released)
-            {
-                _buttonHeld = false;
-            }
-
-            //_drawCol = Color.White;
-        }
-        */
     }
 }

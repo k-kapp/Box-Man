@@ -293,7 +293,7 @@ namespace Sokoban
 
             base.Draw(gameTime);
 
-            Console.WriteLine("Drawing popup dialog");
+            //Console.WriteLine("Drawing popup dialog");
 
             /*
             _gameMgr.SpriteBatch.End();

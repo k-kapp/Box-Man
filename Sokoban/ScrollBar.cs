@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-/*
- * TODO: Implement scroller for forms
- */
 
 
 namespace Sokoban
@@ -18,16 +15,11 @@ namespace Sokoban
     class ScrollBar : XNAForm
     {
 
-        //GameMgr _gameMgr;
         XNAList _parent;
 
         Button _upButton, _downButton, _scroller;
 
-
-        //Rectangle _mainRect = new Rectangle(0, 0, _width, 0);
-        //Rectangle _mainOuterRect = new Rectangle(0, 0, _width, 0);
-
-        //Texture2D _upButtonTexture, _downButtonTexture;
+        int _scrollerSpace;
 
         public ScrollBar(int width, XNAList parent) : base(parent.InnerWidth - width, 0, width, parent.InnerHeight, parent, "", false)
         {
@@ -90,6 +82,24 @@ namespace Sokoban
             _scroller = new Button("", 0, InnerWidth + 1, InnerWidth, InnerHeight - 2 - 2 * InnerWidth, this);
             //_scroller.EventCalls += _gameMgr.MainMenuCallback;
             AddButton(_scroller);
+
+            _scrollerSpace = _scroller.Height;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (_parent.AllElementsCount > _parent.ElementsViewedCount)
+            {
+                _scroller.Height = (int)((_parent.ElementsViewedCount / (float)_parent.AllElementsCount) * _scrollerSpace);
+                _scroller.Y = InnerWidth + 1 + (int)((_parent.ElementsAboveCount) / (float)_parent.AllElementsCount * _scrollerSpace);
+            }
+            else
+            {
+                _scroller.Height = _scrollerSpace;
+                _scroller.Y = InnerWidth + 1;
+            }
         }
     }
 }

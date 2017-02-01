@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
@@ -17,6 +20,8 @@ namespace Sokoban
         private XNAForm _mainForm;
 
         PuzzleList _listForm1, _listForm2;
+        PuzzleListElement _activeElement = null;
+        PuzzleList _activeList = null;
 
         public PuzzleSelector(GameMgr gameMgr) : base(gameMgr)
         {
@@ -29,6 +34,8 @@ namespace Sokoban
             var element = _listForm1.RemoveActiveElement();
             if (element != null)
                 _listForm2.AddElement(element);
+            _activeElement = null;
+            _activeList = null;
         }
 
         public void RightToLeft(object sender, ButtonEventArgs args)
@@ -36,6 +43,8 @@ namespace Sokoban
             var element = _listForm2.RemoveActiveElement();
             if (element != null)
                 _listForm1.AddElement(element);
+            _activeElement = null;
+            _activeList = null;
         }
 
         protected override void ImportTextures()
@@ -45,7 +54,61 @@ namespace Sokoban
         {
             _gameMgr.PuzzlePaths = _listForm2.GetActivePuzzleFilepaths();
 
+            FileStream fs = new FileStream(GameMgr.ActivePuzzlesPathsFilepath, FileMode.Create);
+
+            BinaryFormatter bf = new BinaryFormatter();
+
+            try
+            {
+                bf.Serialize(fs, _gameMgr.PuzzlePaths);
+            }
+            catch (SerializationException e)
+            {
+                Console.WriteLine("Could not save active puzzle settings file");
+                throw;
+            }
+            finally
+            {
+                fs.Close();
+            }
+
             _gameMgr.MainMenuCallback(sender, args);
+        }
+
+        private void DeleteButtonPressed(object sender, ButtonEventArgs args)
+        {
+            if (_activeElement == null)
+            {
+                var popup = PopupDialog.MakePopupDialog("No puzzle selected", "Error", true, this);
+                popup.AddButton(0, 0, Utilities.ClickableDestroyParent, "OK");
+                _gameMgr.centerFormX(popup);
+                _gameMgr.centerFormY(popup);
+                AddForm(popup);
+            }
+            else
+            {
+                var popup = PopupDialog.MakePopupDialog("Are you sure that you want to delete the selected puzzle?", "Confirm", true, this);
+                popup.AddButton(0, 0, DeletePuzzle, "Yes");
+                popup.AddButton(0, 0, Utilities.ClickableDestroyParent, "No");
+                _gameMgr.centerFormX(popup);
+                _gameMgr.centerFormY(popup);
+                AddForm(popup);
+            }
+        }
+
+        private void DeletePuzzle(object sender, ButtonEventArgs args)
+        {
+            Utilities.ClickableDestroyParent(sender, null);
+
+            string filepath = _activeElement.Filepath;
+            _activeList.RemoveActiveElement();
+
+            System.IO.File.Delete(filepath);
+
+            if (_activeList == _listForm2)
+            {
+                _gameMgr.PuzzlePaths.Remove(filepath);
+            }
         }
 
         private void _initialize()
@@ -61,11 +124,37 @@ namespace Sokoban
             int startX = (_mainForm.Width - totalListWidth) / 2;
 
             _listForm1 = new PuzzleList(startX, 50, listWidth, listHeight, "Reserve puzzles", 5, _mainForm);
-            _listForm1.AddAllElements("Puzzles");
+
+            List<string> allPuzzles = PuzzleGrid.getPuzzleFilenames("Puzzles");
+
+            foreach(var puzzleFilename in allPuzzles)
+            {
+                if (!_gameMgr.PuzzlePaths.Contains(puzzleFilename))
+                {
+                    _listForm1.AddElement(puzzleFilename);
+                }
+            }
+
             _listForm2 = new PuzzleList(startX + listWidth + inbetweenSpace, 50, listWidth, listHeight, "Active puzzles", 5, _mainForm);
 
-            Button okButton = new Button("OK", (_mainForm.Width - 50)/2, 580, 100, 50, _mainForm);
+            foreach (var puzzleFilename in _gameMgr.PuzzlePaths)
+            {
+                _listForm2.AddElement(puzzleFilename);
+            }
+
+            int buttonsWidth = 100;
+            int buttonsHeight = 50;
+            int buttonsInbetweenSpace = 30;
+            int buttonsSpace = 2 * buttonsWidth + buttonsInbetweenSpace;
+
+            int buttonsStartX = (_mainForm.Width - buttonsSpace) / 2;
+            int buttonsY = 580;
+
+            Button okButton = new Button("OK", buttonsStartX, buttonsY, buttonsWidth, buttonsHeight, _mainForm);
             okButton.EventCalls += SaveAll;
+
+            Button deleteButton = new Button("Delete", buttonsStartX + buttonsWidth + buttonsInbetweenSpace, buttonsY, buttonsWidth, buttonsHeight, _mainForm);
+            deleteButton.EventCalls += DeleteButtonPressed;
 
             Button rightButton = new Sokoban.Button("", (_mainForm.Width - 60)/2, 100, 60, 60, _mainForm);
             rightButton.newBackground(_gameMgr.Content.Load<Texture2D>("RightArrow"));
@@ -80,8 +169,7 @@ namespace Sokoban
             _mainForm.AddButton(leftButton);
             _mainForm.AddButton(rightButton);
             _mainForm.AddButton(okButton);
-
-            //XNAForm form = new XNAForm(100, 100, 300, 300, this);
+            _mainForm.AddButton(deleteButton);
 
             AddForm(_mainForm);
 
@@ -90,6 +178,30 @@ namespace Sokoban
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (_listForm1.ActiveElement != null)
+            {
+                if (_activeList == _listForm2)
+                {
+                    _activeList.DeactivateActiveElement();
+                }
+                _activeElement = (PuzzleListElement)_listForm1.ActiveElement;
+                _activeList = _listForm1;
+            }
+            if (_listForm2.ActiveElement != null)
+            {
+                if (_activeList == _listForm1)
+                {
+                    _activeList.DeactivateActiveElement();
+                }
+                _activeElement = (PuzzleListElement)_listForm2.ActiveElement;
+                _activeList = _listForm2;
+            }
         }
 
     }
