@@ -47,6 +47,10 @@ The project is very easy to compile: all you need is visual studio, with support
 </p>
 
 <p align="center">
+<img src="ScreenshotDesignerInvalid.png" width="550">
+</p>
+
+<p align="center">
 <img src="ScreenshotSelector.png" width="550">
 </p>
 
