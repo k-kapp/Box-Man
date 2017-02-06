@@ -120,9 +120,16 @@ namespace Sokoban
             _buttonAddedUpdate(button);
         }
 
+        public void AddButton(Button.ButtonClickCallback callback, string text)
+        {
+            Button newButton = new Sokoban.Button(text, 0, 0, _buttonsWidth, _buttonsHeight, this);
+            newButton.EventCalls += callback;
+            _buttonAddedUpdate(newButton);
+        }
+
         public override void AddButton(int x, int y, Button.ButtonClickCallback callback, string text)
         {
-            base.AddButton(x, y, callback, text);
+            Button newButton = new Button(text, 0, 0, _buttonsWidth, _buttonsHeight, this);
             _buttonAddedUpdate(_buttons[_buttons.Count - 1]);
         }
 

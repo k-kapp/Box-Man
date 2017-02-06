@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using System.Runtime.InteropServices;
+//using System.Windows.Forms; 
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,6 +20,9 @@ namespace Sokoban
     {
         public static Texture2D StdCursorTexture;
         public static Texture2D CursorTexture;
+        private static int _keyHeldPrevSize = 128;
+
+        public static bool[] KeyHeldPrev = new bool[_keyHeldPrevSize];
 
 
         public static void DrawCursor(GameMgr gameMgr)
@@ -57,6 +62,68 @@ namespace Sokoban
         public static bool CoordValid(int row, int col, int numRows, int numCols)
         {
             return !(row < 0 || col < 0 || row >= numRows || col >= numCols);
+        }
+
+        public static Texture2D MakeTexture(Color color, GraphicsDevice device)
+        {
+            Color[] data = new Color[1];
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = color;
+            }
+
+            Texture2D returnTexture = new Texture2D(device, 1, 1);
+            returnTexture.SetData(data);
+            return returnTexture;
+        }
+
+        public static List<char> GetKeyboardInput()
+        {
+            KeyboardState keyState = Keyboard.GetState();
+            Keys[] keysDown = keyState.GetPressedKeys();
+
+            for (int i = 0; i < _keyHeldPrevSize; i++)
+            {
+                if (!keysDown.Contains((Keys)i))
+                {
+                    KeyHeldPrev[i] = false;
+                }
+            }
+
+            List<char> chars = new List<char>();
+
+            foreach(var keyDown in keysDown)
+            {
+                int value = (int)keyDown;
+
+                if (value >= KeyHeldPrev.Length || Utilities.KeyHeldPrev[value])
+                    continue;
+                else
+                    KeyHeldPrev[value] = true;
+
+                if (((value >= (int)Keys.D0) && (value <= (int)Keys.D9))
+                    || ((value >= (int)Keys.A) && (value <= (int)Keys.Z))
+                    || ((value >= (int)Keys.NumPad0) && (value <= (int)Keys.NumPad9)))
+                {
+                    if (value >= (int)Keys.NumPad0)
+                        value -= ((int)Keys.NumPad0 - (int)Keys.D0);
+                    chars.Add((char)value);
+                }
+                else if (value == (int)Keys.Back)
+                {
+                    if (chars.Count > 0)
+                    {
+                        chars.RemoveAt(chars.Count - 1);
+                    }
+                    else
+                    {
+                        chars.Add((char)value);
+                    }
+                }
+            }
+
+            return chars;
         }
     }
 
@@ -201,7 +268,7 @@ namespace Sokoban
                 PopupDialog selectPuzzlePopup = PopupDialog.MakePopupDialog("No active puzzles. Please select the 'Select Puzzles' option in the main menu", 
                     "No active puzzles", false, _currState);
                 Button.ButtonClickCallback callback = (a, b) => { var button = a as Button; button.Parent.Destroy(); };
-                selectPuzzlePopup.AddButton(0, 0, callback, "OK");
+                selectPuzzlePopup.AddButton(callback, "OK");
                 centerFormX(selectPuzzlePopup);
                 centerFormY(selectPuzzlePopup);
                 AddPopup(selectPuzzlePopup);

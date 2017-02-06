@@ -141,6 +141,7 @@ namespace Sokoban
                     _tiles[row, col] = new Tile(false, Occpr.VOID);
                 }
             }
+            _initVars();
         }
 
         public static Tile MakeTile(char c)
@@ -431,6 +432,9 @@ namespace Sokoban
         {
             set
             {
+                _numRows = value.GetLength(0);
+                _numCols = value.GetLength(1);
+                _origArr = value;
                 _tiles = value;
             }
 

@@ -121,17 +121,16 @@ namespace Sokoban
             var popup = PopupDialog.MakePopupDialog("Map completed!", "Success", true, this);
 
             Console.WriteLine("Creating map done popup");
-            AddForm(popup);
 
             if (_grid.Filepath != _gameMgr.PuzzlePaths[_gameMgr.PuzzlePaths.Count - 1])
             {
                 Button.ButtonClickCallback NextMapCallback = (sender, args) => { _nextMap(); Utilities.ClickableDestroyParent(sender, args); };
-                popup.AddButton(0, 0, NextMapCallback, "Next map");
+                popup.AddButton(NextMapCallback, "Next map");
             }
 
             Button.ButtonClickCallback selectMapCallback = (sender, args) => { Utilities.ClickableDestroyParent(sender, args); _selectMap(); };
-            popup.AddButton(0, 0, selectMapCallback, "Select map");
-            popup.AddButton(0, 0, ExitToMainMenu, "Exit to main menu");
+            popup.AddButton(selectMapCallback, "Select map");
+            popup.AddButton(ExitToMainMenu, "Exit to main menu");
 
             _gameMgr.centerFormX(popup);
             _gameMgr.centerFormY(popup);
@@ -249,8 +248,6 @@ namespace Sokoban
         private void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-
-
         }
 
         private void UnloadContent()
@@ -280,8 +277,8 @@ namespace Sokoban
         {
             PopupDialog popup = PopupDialog.MakePopupDialog("Are you sure that you want to quit? (progress on this level will be lost)",
                                                             "Quit?", true, this);
-            popup.AddButton(new Button("Quit", 0, 0, 0, 0, ExitToMainMenu, popup));
-            popup.AddButton(new Button("Cancel", 0, 0, 0, 0, PopForm, popup));
+            popup.AddButton(ExitToMainMenu, "Quit");
+            popup.AddButton(Utilities.ClickableDestroyParent,"Cancel");
 
             _gameMgr.centerFormX(popup);
             _gameMgr.centerFormY(popup);
@@ -312,7 +309,6 @@ namespace Sokoban
                     menuInGame.AddButton("Quit", ExitConfirmDialog, menuInGame);
                     menuInGame.CenterAll();
                     _gameMgr.centerMenuXY(menuInGame);
-                    AddForm(menuInGame);
                 }
                 else
                 {

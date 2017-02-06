@@ -10,10 +10,6 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Sokoban
 {
-    public class ButtonEventArgs : EventArgs
-    {
-        
-    }
 
     
     public class Button : Clickable
@@ -132,7 +128,8 @@ namespace Sokoban
         {
             _textHeight = (int)(_font.MeasureString(_text).Y*_scale);
             _textWidth = (int)(_font.MeasureString(_text).X*_scale);
-            _stringPos = new Vector2(_mainRect.X + (_mainRect.Width - _textWidth)/2 + _horizOffset, _mainRect.Y + (_mainRect.Height - _textHeight)/2 + _vertOffset);
+            //_stringPos = new Vector2(_mainRect.X + (_mainRect.Width - _textWidth)/2 + _horizOffset, _mainRect.Y + (_mainRect.Height - _textHeight)/2 + _vertOffset);
+            _stringPos = new Vector2((_mainRect.Width - _textWidth)/2 + _horizOffset, (_mainRect.Height - _textHeight)/2 + _vertOffset);
         }
 
         protected void Initialize()
@@ -149,13 +146,19 @@ namespace Sokoban
 
             updateStringPos();
         }
+        
+        protected override void _drawMisc()
+        {
+            _gameMgr.SpriteBatch.DrawString(_font, _text, _stringPos, _stringCol, 0, new Vector2(0, 0), _scale, 0, 0);
+        }
 
-
+        /*
         public override void Draw()
         {
             base.Draw();
             _gameMgr.SpriteBatch.DrawString(_font, _text, _stringPos, _stringCol, 0, new Vector2(0, 0), _scale, 0, 0);
         }
+        */
 
         public override void Update()
         {

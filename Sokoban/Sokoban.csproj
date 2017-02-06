@@ -57,6 +57,7 @@
     <Compile Include="PuzzleListElement.cs" />
     <Compile Include="PuzzleSelector.cs" />
     <Compile Include="ScrollBar.cs" />
+    <Compile Include="TextField.cs" />
     <Compile Include="XNAList.cs" />
     <Compile Include="StateBase.cs" />
     <Compile Include="XNAForm.cs" />

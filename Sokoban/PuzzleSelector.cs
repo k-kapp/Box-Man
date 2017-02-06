@@ -80,7 +80,7 @@ namespace Sokoban
             if (_activeElement == null)
             {
                 var popup = PopupDialog.MakePopupDialog("No puzzle selected", "Error", true, this);
-                popup.AddButton(0, 0, Utilities.ClickableDestroyParent, "OK");
+                popup.AddButton(Utilities.ClickableDestroyParent, "OK");
                 _gameMgr.centerFormX(popup);
                 _gameMgr.centerFormY(popup);
                 AddForm(popup);
@@ -88,8 +88,8 @@ namespace Sokoban
             else
             {
                 var popup = PopupDialog.MakePopupDialog("Are you sure that you want to delete the selected puzzle?", "Confirm", true, this);
-                popup.AddButton(0, 0, DeletePuzzle, "Yes");
-                popup.AddButton(0, 0, Utilities.ClickableDestroyParent, "No");
+                popup.AddButton(DeletePuzzle, "Yes");
+                popup.AddButton(Utilities.ClickableDestroyParent, "No");
                 _gameMgr.centerFormX(popup);
                 _gameMgr.centerFormY(popup);
                 AddForm(popup);
@@ -164,6 +164,7 @@ namespace Sokoban
             leftButton.newBackground(_gameMgr.Content.Load<Texture2D>("LeftArrow"));
             leftButton.EventCalls += RightToLeft;
 
+            /*
             _mainForm.AddForm(_listForm1);
             _mainForm.AddForm(_listForm2);
             _mainForm.AddButton(leftButton);
@@ -172,7 +173,7 @@ namespace Sokoban
             _mainForm.AddButton(deleteButton);
 
             AddForm(_mainForm);
-
+            */
         }
 
         public override void Draw(GameTime gameTime)

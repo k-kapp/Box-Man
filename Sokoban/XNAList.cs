@@ -44,7 +44,7 @@ namespace Sokoban
             _scrollBar = new Sokoban.ScrollBar(_scrollerWidth, this);
             _scrollBar.BaseColor = Color.LightGray;
 
-            AddForm(_scrollBar);
+            //AddForm(_scrollBar);
         }
 
         private void _updateElementPosses()
@@ -124,6 +124,17 @@ namespace Sokoban
             _reserveElementsUp.RemoveAt(_reserveElementsUp.Count - 1);
 
             _updateElementPosses();
+        }
+
+        public override void AddClickable(Clickable clickable)
+        {
+            var element = clickable as XNAListElement;
+            if (element != null)
+            {
+                AddElement(element);
+            }
+            else
+                base.AddClickable(clickable);
         }
 
         public void AddElement(XNAListElement element)

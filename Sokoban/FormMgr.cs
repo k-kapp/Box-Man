@@ -93,7 +93,8 @@ namespace Sokoban
         {
             foreach (XNAForm form in formsAdd)
             {
-                forms.Add(form);
+                if (!forms.Contains(form))
+                    forms.Add(form);
             }
             formsAdd.Clear();
         }

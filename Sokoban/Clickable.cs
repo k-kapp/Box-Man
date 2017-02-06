@@ -17,15 +17,45 @@ namespace Sokoban
         DRAG
     }
 
+    public class ButtonEventArgs : EventArgs
+    {
+        public List<Clickable> Clickables;
+        public List<XNAForm> forms;
+
+        public void AddClickable(Clickable clickable)
+        {
+            if (Clickables == null)
+            {
+                Clickables = new List<Clickable>();
+            }
+            Clickables.Add(clickable);
+        }
+
+        public void AddForm(XNAForm form)
+        {
+            if (forms == null)
+            {
+                forms = new List<XNAForm>();
+            }
+            forms.Add(form);
+        }
+    }
+
     public abstract class Clickable
     {
+        ButtonEventArgs _eventArgs;
         public delegate void ButtonClickCallback(object caller, ButtonEventArgs args);
 
         public event ButtonClickCallback EventCalls = delegate { };
 
         protected Rectangle _mainRect;
+        protected Rectangle _drawRect;
         protected GameMgr _gameMgr;
         protected XNAForm _parent;
+
+
+        protected RenderTarget2D _renderTargetTemp;
+        protected RenderTarget2D _renderTarget;
 
         protected bool held;
 
@@ -40,6 +70,8 @@ namespace Sokoban
 
         public Clickable(int x, int y, int width, int height, ClickType type, XNAForm parent)
         {
+            _eventArgs = new Sokoban.ButtonEventArgs();
+
             _type = type;
 
             active = false;
@@ -49,10 +81,26 @@ namespace Sokoban
             _inactiveCol = Color.White;
 
             _mainRect = new Rectangle(x, y, width, height);
+            _drawRect = new Rectangle(0, 0, width, height);
+
             _parent = parent;
             _gameMgr = _parent.GameMgr;
 
             held = false;
+            new RenderTarget2D(_gameMgr.GraphicsDevice, width, height);
+
+            _renderTarget = new RenderTarget2D(_gameMgr.GraphicsDevice, width, height, false, _gameMgr.GraphicsDevice.PresentationParameters.BackBufferFormat, 
+                                                _gameMgr.GraphicsDevice.PresentationParameters.DepthStencilFormat, _gameMgr.GraphicsDevice.PresentationParameters.MultiSampleCount,  RenderTargetUsage.PreserveContents);
+
+            parent.AddClickable(this);
+        }
+
+        public Clickable(Clickable other, XNAForm parent) : this(other.X, other.Y, other.Width, other.Height, other._type, parent)
+        {
+            _drawCol = other._drawCol;
+            _activeCol = other._activeCol;
+            _inactiveCol = other._inactiveCol;
+            BackgroundTexture = other.BackgroundTexture;
         }
 
         public bool MouseOnClickable()
@@ -81,11 +129,23 @@ namespace Sokoban
             held = mstate.LeftButton == ButtonState.Pressed;
         }
 
+        public ButtonEventArgs ButtonEventArgs
+        {
+            get
+            {
+                return _eventArgs;
+            }
+
+            set
+            {
+                _eventArgs = value;
+            }
+        }
+
+
         public virtual void OnClick()
         {
-            ButtonEventArgs args = new ButtonEventArgs();
-
-            EventCalls(this, args);
+            EventCalls(this, _eventArgs);
         }
 
         public bool ClickedUp
@@ -149,9 +209,28 @@ namespace Sokoban
             }
         }
 
+        protected virtual void _drawMisc()
+        {
+
+        }
+
         public virtual void Draw()
         {
-            _parent.GameMgr.DrawSprite(_background, _mainRect, _drawCol);
+            _renderTargetTemp = _parent.RenderTarget;
+
+            _gameMgr.SpriteBatch.End();
+            _gameMgr.SetRenderTarget(_renderTarget);
+            _gameMgr.SpriteBatch.Begin();
+
+            _parent.GameMgr.DrawSprite(_background, _drawRect, _drawCol);
+
+            _drawMisc();
+
+            _gameMgr.SpriteBatch.End();
+            _gameMgr.SetRenderTarget(_renderTargetTemp);
+            _gameMgr.SpriteBatch.Begin();
+
+            _gameMgr.DrawSprite(_renderTarget, _mainRect, Color.White);
         }
 
         public Texture2D BackgroundTexture
@@ -235,6 +314,9 @@ namespace Sokoban
         {
             set
             {
+                _renderTarget = new RenderTarget2D(_gameMgr.GraphicsDevice, value, Height, false, _gameMgr.GraphicsDevice.PresentationParameters.BackBufferFormat, 
+                                                    _gameMgr.GraphicsDevice.PresentationParameters.DepthStencilFormat, _gameMgr.GraphicsDevice.PresentationParameters.MultiSampleCount,  RenderTargetUsage.PreserveContents);
+                _drawRect.Width = value;
                 _mainRect.Width = value;
             }
 
@@ -248,6 +330,9 @@ namespace Sokoban
         {
             set
             {
+                _renderTarget = new RenderTarget2D(_gameMgr.GraphicsDevice, Width, value, false, _gameMgr.GraphicsDevice.PresentationParameters.BackBufferFormat, 
+                                                    _gameMgr.GraphicsDevice.PresentationParameters.DepthStencilFormat, _gameMgr.GraphicsDevice.PresentationParameters.MultiSampleCount,  RenderTargetUsage.PreserveContents);
+                _drawRect.Height = value;
                 _mainRect.Height = value;
             }
 

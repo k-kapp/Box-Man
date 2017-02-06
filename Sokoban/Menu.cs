@@ -95,11 +95,9 @@ namespace Sokoban
 
         private Button _insertButtonNoCallback(string buttonStr, int index, XNAForm parent)
         {
-            Button newButton = new Button(buttonStr, 0, 0, 0, 0, parent);
+            Button newButton = new Button(buttonStr, 0, 0, _buttonsWidth, _buttonsHeight, parent);
 
-            newButton.Height = _buttonsHeight;
-            newButton.Width = _buttonsWidth;
-            _buttons.Insert(index, newButton);
+            //_buttons.Insert(index, newButton);
 
             _centerButton(newButton);
             SetButtonsY();

@@ -15,14 +15,14 @@ namespace Sokoban
         {
             var puzzleElement = new PuzzleListElement(filepath, this);
 
-            AddElement(puzzleElement);
+            //AddElement(puzzleElement);
         }
 
         public void AddElement(int puzzleNum)
         {
             var puzzleElement = new PuzzleListElement(puzzleNum, this);
 
-            AddElement(puzzleElement);
+            //AddElement(puzzleElement);
         }
 
         public void AddElements(int num)

@@ -17,6 +17,10 @@ namespace Sokoban
             BackgroundTexture = _gameMgr.Content.Load<Texture2D>("WhiteBlock");
         }
 
+        public PaintButton(PaintButton other, XNAForm parent) : base(other, parent)
+        {
+        }
+
         public override void Update()
         {
             base.Update();

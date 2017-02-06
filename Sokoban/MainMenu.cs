@@ -48,7 +48,6 @@ namespace Sokoban
             int screenWidth = _gameMgr.GraphicsDevice.PresentationParameters.BackBufferWidth;
             int screenHeight = _gameMgr.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
-
             _menu.SetXY((screenWidth - width) / 2, 10);
 
             _menu.AddButton("Play", _gameMgr.NewGameCallback, _menu);

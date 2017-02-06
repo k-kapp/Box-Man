@@ -72,18 +72,23 @@ namespace Sokoban
             _upButton = new Sokoban.Button("", 0, 0, InnerWidth, InnerWidth, this);
             _upButton.newBackground(_createArrowButtonTexture("UpArrow", Color.Black));
             _upButton.EventCalls += _parent.ScrollUp;
-            AddButton(_upButton);
+            //AddButton(_upButton);
 
             _downButton = new Sokoban.Button("", 0, InnerHeight - InnerWidth, InnerWidth, InnerWidth, this);
             _downButton.newBackground(_createArrowButtonTexture("DownArrow", Color.Black));
             _downButton.EventCalls += _parent.ScrollDown;
-            AddButton(_downButton);
+            //AddButton(_downButton);
 
             _scroller = new Button("", 0, InnerWidth + 1, InnerWidth, InnerHeight - 2 - 2 * InnerWidth, this);
             //_scroller.EventCalls += _gameMgr.MainMenuCallback;
-            AddButton(_scroller);
+            //AddButton(_scroller);
 
             _scrollerSpace = _scroller.Height;
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
         }
 
         public override void Update(GameTime gameTime)

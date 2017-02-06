@@ -20,6 +20,7 @@ namespace Sokoban
             Pos = pos;
             Scale = scale;
             _parent = parent;
+            _parent.AddLabel(this);
         }
 
         public void Draw()
@@ -82,8 +83,10 @@ namespace Sokoban
         protected List<Button> _buttons;
         protected List<Clickable> _clickables;
         protected List<XNALabel> _labels;
+        protected List<TextField> _textFields;
 
         bool Draggable = true;
+
 
         public XNAForm(int x, int y, int width, int height, FormMgr parent, string title = "XNAForm", bool titleBar = true) : base(parent.GameMgr)
         {
@@ -108,6 +111,7 @@ namespace Sokoban
 
             Height = height;
 
+            parent.AddForm(this);
         }
 
         private void _initArgs(int x, int y, int width, int height, string title, bool titleBar)
@@ -236,12 +240,12 @@ namespace Sokoban
 
         public virtual void AddButton(int x, int y, Button.ButtonClickCallback callback, string text)
         {
-            _buttons.Add(new Sokoban.Button(text, x, y, 100, 50, callback, this));
+            new Sokoban.Button(text, x, y, 100, 50, callback, this);
         }
 
         public virtual void AddButton(int x, int y, int width, int height, Button.ButtonClickCallback callback, string text)
         {
-            _buttons.Add(new Button(text, x, y, width, height, callback, this));
+            new Button(text, x, y, width, height, callback, this);
         }
 
         public virtual void AddButton(Button button)
@@ -251,12 +255,39 @@ namespace Sokoban
 
         public virtual void AddClickable(Clickable clickable)
         {
-            _clickables.Add(clickable);
+            var button = clickable as Button;
+
+            if (button != null) 
+            _buttons.Add(button);
+            else 
+                _clickables.Add(clickable);
+        }
+
+        public void ActivateTextField(TextField field)
+        {
+            DeactivateAllTextFields();
+
+            field.Active = true;
+        }
+
+        public void DeactivateAllTextFields()
+        {
+            foreach(Clickable click in _clickables)
+            {
+                var other_field = click as TextField;
+
+                other_field.Active = false;
+            }
         }
 
         public virtual void AddLabel(XNALabel label)
         {
             _labels.Add(label);
+        }
+
+        public virtual void AddTextField(TextField field)
+        {
+            _textFields.Add(field);
         }
 
         public override void AddForm(XNAForm form)
@@ -307,6 +338,7 @@ namespace Sokoban
             _buttons = new List<Button>();
             _labels = new List<XNALabel>();
             _clickables = new List<Clickable>();
+            _textFields = new List<TextField>();
 
             _defaultFont = _gameMgr.Content.Load<SpriteFont>("Courier New");
             _font = _defaultFont;
@@ -390,6 +422,19 @@ namespace Sokoban
             set
             {
                 _titleBarColor = value;
+            }
+        }
+
+        public Color BorderColor
+        {
+            get
+            {
+                return _borderColor;
+            }
+
+            set
+            {
+                _borderColor = value;
             }
         }
 
@@ -609,6 +654,11 @@ namespace Sokoban
                 click.Draw();
             }
 
+            foreach (TextField field in _textFields)
+            {
+                field.Draw();
+            }
+
             DrawMisc(gameTime);
 
             // draws any other forms that may be held by current form
@@ -647,6 +697,10 @@ namespace Sokoban
                 click.Update();
             }
 
+            foreach (TextField field in _textFields)
+            {
+                field.Update();
+            }
 
         }
 

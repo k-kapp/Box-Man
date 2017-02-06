@@ -91,7 +91,8 @@ namespace Sokoban
         {
             base.AddForms();
             foreach (var popup in popupsAdd)
-                popups.Add(popup);
+                if (!popups.Contains(popup))
+                    popups.Add(popup);
             popupsAdd.Clear();
         }
 
