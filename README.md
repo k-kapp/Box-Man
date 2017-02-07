@@ -20,9 +20,7 @@ The project is very easy to compile: all you need is visual studio, with support
 
 ##TODO
 
-+ In puzzle editor,
- - add functionality for specifying the grid size
- - enable existing puzzles to be imported and modified
++ In puzzle editor, enable existing puzzles to be imported and modified
  
 + Enable scroller to be moved by dragging it (not only by pressing arrow keys, e.g. in lists in puzzle selector)
 
