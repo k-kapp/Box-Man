@@ -1,12 +1,12 @@
-#Sokoban
+# Sokoban
 
-##Contents
+## Contents
 
 1. [Introduction](#introduction)
 2. [TODO list](#todo)
 3. [Screenshots](#screenshots)
 
-##Introduction
+## Introduction
 
 A Sokoban clone, written in C#. The object of the game is to push all boxes onto the dots. This version that I wrote can take customized maps (puzzles) to play on. The user may design puzzles him/herself, after which they go into the "reserved" pool of puzzles. Only the "active" pool of puzzles are played. The reserved and active pools may be modified via the puzzle selector (from the main menu) shown in the fourth screenshot below. 
 
@@ -18,7 +18,7 @@ Note that this is a work in progress, and is still a little rough around the edg
 
 The project is very easy to compile: all you need is visual studio, with support for C#. Open the sln file in the root directory, and compile. However, you will most likely need Monogame installed for visual studio. Note that I have included a compiled version in the zip file in the root (SokobanCompiled.zip). There was, however, some difficulty when I tried to run this executable on another computer - most likely because .NET framework 4.0 was not installed on that PC.
 
-##TODO
+## TODO
 
 + In puzzle editor, enable existing puzzles to be imported and modified
  
@@ -30,7 +30,7 @@ The project is very easy to compile: all you need is visual studio, with support
 
 + Cleanup code (make naming more consistent, relocate certain functions/methods to more sensible locations, etc.)
 
-##Screenshots
+## Screenshots
 
 <p align="center">
 <img src="ScreenshotGame.png" width="550">
