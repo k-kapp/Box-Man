@@ -12,7 +12,7 @@ A Sokoban clone, written in C#. The object of the game is to push all boxes onto
 
 Note that the puzzle designer checks basic validity of the puzzle, such as whether it has a starting position, whether the walls enclose the puzzle and whether all areas are reachable. The last aforementioned requirement was checked by implementing a relatively simple depth-first search algorithm: all connected paths in the puzzle are visited, after which it is easy to determine whether all paths are reachable. I have done some basic testing of the algorithm, and of the validation of the designed puzzles, but I hope to test it a bit more thoroughly soon.
 
-A custom API was written to facilitate the creation of a GUI for the game. This included creating my own code for buttons, forms, scrollbars, etc. This was done using the raw graphics functionality provided by the XNA framework (through Monogame). I hope to extend and generalize this API so that it can be used by other programmers too.
+A custom API was written to facilitate the creation of a GUI for the game. This included creating my own code for buttons, forms, scrollbars, etc. This was done using the raw graphics functionality provided by the XNA framework (through Monogame). 
 
 Note that this is a work in progress, and is still a little rough around the edges. However, basic functionality is there (check TODO list, after the screenshots below, for information on bugs, missing features, etc.)
 
