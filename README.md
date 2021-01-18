@@ -6,7 +6,7 @@
 2. [TODO list](#todo)
 3. [Screenshots](#screenshots)
 
-## NOTE:
+## NOTE
 
 Currently, I cannot compile it with Visual Studio 2019. This was actually written in the year 2017 with Visual Studio 2015 or 2017, with an older version of Monogame, on which it did compile. Plus, some of the function calls do not seem to match any signatures of known functions, probably due to the outdated Monogame framework I used to write this originally in. I will make modifications to compile it on newer version of Visual Studio and Monogame at a later stage. In the meantime, feel free to take a look at the code!
 
