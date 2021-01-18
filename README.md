@@ -16,7 +16,7 @@ A custom API was written to facilitate the creation of a GUI for the game. This 
 
 Note that this is still a little rough around the edges. However, basic functionality is there (check TODO list, after the screenshots below, for information on bugs, missing features, etc.). When I have some more time, I might come back to it at a later stage to improve it a bit.
 
-Currently, I cannot compile it with Visual Studio 2019. This was actually written in 2017 with Visual Studio 2015 or 2017, with an older version of Monogame. Plus, some of the function calls do not seem to match any signatures of known functions, probably due to the outdated Monogame framework I used to write this originally in. I will make modifications to compile it on newer version of Visual Studio and Monogame at a later stage. In the meantime, feel free to take a look at the code!
+Currently, I cannot compile it with Visual Studio 2019. This was actually written in the year 2017 with Visual Studio 2015 or 2017, with an older version of Monogame. Plus, some of the function calls do not seem to match any signatures of known functions, probably due to the outdated Monogame framework I used to write this originally in. I will make modifications to compile it on newer version of Visual Studio and Monogame at a later stage. In the meantime, feel free to take a look at the code!
 
 ## TODO
 
