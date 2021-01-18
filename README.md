@@ -16,7 +16,7 @@ A custom API was written to facilitate the creation of a GUI for the game. This 
 
 Note that this is a work in progress, and is still a little rough around the edges. However, basic functionality is there (check TODO list, after the screenshots below, for information on bugs, missing features, etc.)
 
-The project is very easy to compile: all you need is visual studio, with support for C#. Open the sln file in the root directory, and compile. However, you will most likely need Monogame installed for visual studio. Note that I have included a compiled version in the zip file in the root (SokobanCompiled.zip). There was, however, some difficulty when I tried to run this executable on another computer - most likely because .NET framework 4.0 was not installed on that PC.
+Currently, I cannot compile it with Visual Studio 2019. This was actually written in 2017 with Visual Studio 2015 or 2017, with an older version of Monogame. Plus, some of the function calls do not seem to match any signatures of known functions, probably due to the outdated Monogame framework I used to write this originally in. I will make modifications to compile it on newer version of Visual Studio and Monogame at a later stage. In the meantime, feel free to take a look at the code!
 
 ## TODO
 
@@ -37,24 +37,6 @@ The project is very easy to compile: all you need is visual studio, with support
 </p>
 
 <p align="center">
-<img src="ScreenshotGameMenu.png" width="550">
-</p>
-
-<p align="center">
 <img src="ScreenshotDesigner.png" width="550">
 </p>
-
-<p align="center">
-<img src="ScreenshotDesignerInvalid.png" width="550">
-</p>
-
-<p align="center">
-<img src="ScreenshotDesignerResize.png" width="550">
-</p>
-
-<p align="center">
-<img src="ScreenshotSelector.png" width="550">
-</p>
-
-
 
