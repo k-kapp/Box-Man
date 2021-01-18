@@ -6,6 +6,10 @@
 2. [TODO list](#todo)
 3. [Screenshots](#screenshots)
 
+## NOTE:
+
+Currently, I cannot compile it with Visual Studio 2019. This was actually written in the year 2017 with Visual Studio 2015 or 2017, with an older version of Monogame, on which it did compile. Plus, some of the function calls do not seem to match any signatures of known functions, probably due to the outdated Monogame framework I used to write this originally in. I will make modifications to compile it on newer version of Visual Studio and Monogame at a later stage. In the meantime, feel free to take a look at the code!
+
 ## Introduction
 
 A game similar to Sokoban, written in C#. The object of the game is to push all boxes onto the dots. This version that I wrote can take customized maps (puzzles) to play on. The user may design puzzles him/herself, after which they go into the "reserved" pool of puzzles. Only the "active" pool of puzzles are played. The reserved and active pools may be modified via the puzzle selector (from the main menu) shown in the fourth screenshot below. 
@@ -16,7 +20,6 @@ A custom API was written to facilitate the creation of a GUI for the game. This 
 
 Note that this is still a little rough around the edges. However, basic functionality is there (check TODO list, after the screenshots below, for information on bugs, missing features, etc.). When I have some more time, I might come back to it at a later stage to improve it a bit.
 
-Currently, I cannot compile it with Visual Studio 2019. This was actually written in the year 2017 with Visual Studio 2015 or 2017, with an older version of Monogame. Plus, some of the function calls do not seem to match any signatures of known functions, probably due to the outdated Monogame framework I used to write this originally in. I will make modifications to compile it on newer version of Visual Studio and Monogame at a later stage. In the meantime, feel free to take a look at the code!
 
 ## TODO
 
